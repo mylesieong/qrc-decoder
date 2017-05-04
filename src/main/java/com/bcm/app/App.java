@@ -4,10 +4,14 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
 public class App {
+    public final static String COMMAND = "parseQRC ";
     public static void main( String[] args ){
+	if (args.length != 1){
+	    return ;
+	}
+	String imageFile = args[0];
         App app = new App();
-	String command = "ping -n 3 www.google.com";
-	String output = app.executeCommand(command);
+	String output = app.executeCommand(COMMAND + imageFile);
 	System.out.println(output);
     }
     private String executeCommand(String command){
