@@ -20,21 +20,22 @@ public class Main extends JFrame implements ActionListener{
     private JButton mValidateButton;
     private JButton mUploadButton;
     private JTextArea mTextArea;
+    private JFileChooser mFileChooser;
 
     public static void main( String[] args ){
+
         Main screen = new Main();
         screen.initialize();
         screen.setVisible(true);
+
     }
 
-    /*
-        JFileChooser jfc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
-        int returnValue = jfc.showOpenDialog(null);
-        if ( returnValue == JFileChooser.APPROVE_OPTION){
-            File selectedFile = jfc.getSelectedFile();
-            System.out.println(selectedFile.getAbsolutePath());
+    public JFileChooser getFileChooser(){
+        if ( this.mFileChooser == null){
+            this.mFileChooser = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
         }
-    */
+        return this.mFileChooser;
+    }
         
     public void initialize() {
 
@@ -42,7 +43,7 @@ public class Main extends JFrame implements ActionListener{
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.getContentPane().setLayout(null);
         
-        mFileTextField = new JTextField("Test Field");
+        mFileTextField = new JTextField("");
         mFileTextField.setBounds(15, 15, 390, 20);
         this.getContentPane().add(mFileTextField);
         
@@ -61,7 +62,7 @@ public class Main extends JFrame implements ActionListener{
         mUploadButton.addActionListener(this);
         this.getContentPane().add(mUploadButton);
         
-        mTextArea = new JTextArea("Text Area");
+        mTextArea = new JTextArea("");
         mTextArea.setBounds(15, 50, 670, 250);
         this.getContentPane().add(mTextArea);
 
@@ -70,14 +71,18 @@ public class Main extends JFrame implements ActionListener{
     @Override
     public void actionPerformed(ActionEvent e){
 
-        /*
-        if (e.getSource() == this.mStartButton){
-        }else if (e.getSource() == this.mStopButton){
-        }else if (e.getSource() == this.mExitButton){
-        }else if (e.getSource() == this.mLoadConfigButton){
-        }else{
-            System.out.println("Callback to MainFrame");
+        if (e.getSource() == this.mChooseButton){
+            
+            JFileChooser jfc = this.getFileChooser();
+            int returnValue = jfc.showOpenDialog(null);
+
+            if ( returnValue == JFileChooser.APPROVE_OPTION){
+                this.mFileTextField.setText(jfc.getSelectedFile().getAbsolutePath());
+            }
+
+        }else if (e.getSource() == this.mValidateButton){
+        }else if (e.getSource() == this.mUploadButton){
         }
-        */
+
     }
 }
