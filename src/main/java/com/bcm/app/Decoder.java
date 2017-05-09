@@ -4,20 +4,18 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-public class App {
+public class Decoder {
 
     public final static String COMMAND = "parseQRC ";
 
-    public static void main( String[] args ){
-        if (args.length != 1){
-            return ;
-        }
-        String imageFile = args[0];
-        String output = executeCommand(COMMAND + imageFile);
-        String[] outputTokens = tokenizeOutput(output);
+    public static String decodeImageFile(String filename){
+        String result = "";
+        String commandOutput = executeCommand(COMMAND + filename);
+        String[] outputTokens = tokenizeOutput(commandOutput);
         for (int i = 0; i < outputTokens.length ; i++){
-            System.out.print(outputTokens[i] + "\t");
+            result += outputTokens[i] + "\t";
         }
+        return result; 
     }
 
     private static String executeCommand(String command){

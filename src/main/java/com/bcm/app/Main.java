@@ -81,6 +81,10 @@ public class Main extends JFrame implements ActionListener{
             }
 
         }else if (e.getSource() == this.mValidateButton){
+
+            String decodeText = Decoder.decodeImageFile(this.mFileTextField.getText());
+            this.mTextArea.setText(decodeText);
+
         }else if (e.getSource() == this.mUploadButton){
         }
 
