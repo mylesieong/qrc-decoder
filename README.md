@@ -25,13 +25,12 @@
 - Dependency in `[DllImport...]`, because it is a **runtime dll binding**, so only need to ensure that dll is available in the same directory that pgm.exe is invoked (in this case the LM_Decoder.dll).
 
 ## Compile Java Code
-
-
+`mvn clean package`
 
 ## Run the Program
-
-Invoke program with `java -cp {name_w_path}.jar com.bcm.app.Main`
+`java -cp {name_w_path}.jar com.bcm.app.Main`
 
 # Working Log
 
 - **2017-05-09** Source pdfbox to be the alternatives of imageMagick, the benefics is no installation for pdfbox (use it as the command line tool)
+- **2017-05-10** Build the convert logic but found that the density of some testing is too low that cuase program collapse. And yet the upload logic is not applied.
