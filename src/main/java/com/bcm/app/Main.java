@@ -1,6 +1,11 @@
 package com.bcm.app;
 
+import static java.nio.file.StandardCopyOption.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 import java.io.File;
+import java.io.FileInputStream;
 
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileSystemView;
@@ -81,10 +86,44 @@ public class Main extends JFrame implements ActionListener{
             }
 
         }else if (e.getSource() == this.mValidateButton){
+          try{
 
-            String decodeText = Decoder.decodeImageFile(this.mFileTextField.getText());
-            this.mTextArea.setText(decodeText);
+            this.mTextArea.setText("Start validation...");
 
+            /* Build a folder next to target pdf and make its copy into folder*/
+            String fileChooserResult = this.mFileTextField.getText();
+            String tempPathName = fileChooserResult.substring(0, fileChooserResult.lastIndexOf(File.separator)) + File.separator + "temp"; 
+            String tempPDFName = tempPathName + File.separator + "temp.pdf";
+
+            File targetPDF = new File(fileChooserResult);
+            File tempPath = new File(tempPathName);
+
+            tempPath.mkdir();
+            this.mTextArea.setText(this.mTextArea.getText() + "\n"
+                    + "Make temp directory:" + tempPathName );
+
+            Files.copy(new FileInputStream(targetPDF), Paths.get(tempPDFName), REPLACE_EXISTING);
+            this.mTextArea.setText(this.mTextArea.getText() + "\n"
+                    + "Create temp pdf copy:" + tempPDFName );
+
+            /* Run command line tool to convert pdf to image */
+            Convertor.convertPDFToImage(tempPDFName);
+
+            /* Decode all generated imaged Files */
+            File[] fileList = tempPath.listFiles();
+            for (int i = 0; i < fileList.length ; i++){
+                if (fileList[i].getAbsolutePath().endsWith(".jpg")){
+                    String decodeText = Decoder.decodeImageFile(fileList[i].getAbsolutePath());
+                    this.mTextArea.setText(this.mTextArea.getText() + "\n"
+                         + decodeText );
+                }
+            }
+            //String decodeText = Decoder.decodeImageFile(this.mFileTextField.getText());
+            //this.mTextArea.setText(decodeText);
+
+          }catch (Exception ex){
+              ex.printStackTrace();
+          }
         }else if (e.getSource() == this.mUploadButton){
         }
 
