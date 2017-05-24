@@ -12,6 +12,7 @@ import javax.swing.filechooser.FileSystemView;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
 import javax.swing.JTextArea;
+import javax.swing.JScrollPane;
 import javax.swing.JDialog;
 import javax.swing.JButton;
 
@@ -25,6 +26,7 @@ public class Main extends JFrame implements ActionListener{
     private JButton mValidateButton;
     private JButton mUploadButton;
     private JTextArea mTextArea;
+    private JScrollPane mScrollPane;
     private JFileChooser mFileChooser;
 
     public static void main( String[] args ){
@@ -68,8 +70,11 @@ public class Main extends JFrame implements ActionListener{
         this.getContentPane().add(mUploadButton);
         
         mTextArea = new JTextArea("");
-        mTextArea.setBounds(15, 50, 670, 250);
-        this.getContentPane().add(mTextArea);
+        mScrollPane = new JScrollPane(mTextArea);
+        mScrollPane.setBounds(15, 50, 670, 250);
+        this.getContentPane().add(mScrollPane);
+        
+        this.setResizable(false);
 
     }
     
