@@ -36,6 +36,14 @@ public class Decoder {
     }
 
     private static String[] tokenizeOutput(String output){
+        System.out.println("Debug message Myles:");
+        System.out.println(output);
+        if (output == null 
+                || output.compareTo("") == 0
+                || output.contains("error") ){
+            return new String[0];
+        }
+
         String[] outputTokenized = output.split(";");
         ArrayList<String> helperList = new ArrayList<String>();
         for (int i = 0 ; i < 6 ; i++){
