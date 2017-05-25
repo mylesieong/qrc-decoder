@@ -205,9 +205,13 @@ public class Main extends JFrame implements ActionListener{
             File[] fileList = tempPath.listFiles();
             for (int i = 0; i < fileList.length ; i++){
                 if (fileList[i].getAbsolutePath().endsWith(".jpg")){
+
                     String c = Decoder.decodeImageFile(fileList[i].getAbsolutePath());
-                    result.append(c);
-                    result.append("\n");
+                    if (c.compareTo("") != 0){
+                        result.append(c);
+                        result.append("\n");
+                    }
+
                 }
             }
 
