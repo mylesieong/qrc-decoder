@@ -6,6 +6,7 @@ import java.nio.file.Paths;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileSystemView;
@@ -98,52 +99,38 @@ public class Main extends JFrame implements ActionListener{
 
         }else if (e.getSource() == this.mValidateButton){
 
+            echo("Start validation...");
             String originPDFName = this.mFileTextField.getText();
-            String tempPathName = originPDFName.substring(0, originPDFName.lastIndexOf(File.separator)) + File.separator + "temp"; 
-            String tempPDFName = tempPathName + File.separator + "temp.pdf";
-
-            try{
-
-                echo("Start validation...");
-
-                /* Build a folder next to target pdf and make its copy into folder*/
-                File tempPath = new File(tempPathName);
-                File originPDF = new File(originPDFName);
-
-                tempPath.mkdir();
-                echo("Make temp directory:" + tempPathName);
-
-                Files.copy(new FileInputStream(originPDF), Paths.get(tempPDFName), REPLACE_EXISTING);
-                echo("Create temp pdf copy:" + tempPDFName);
-
-                /* Run command line tool to convert pdf to image */
-                Convertor.convertPDFToImage(tempPDFName);
-
-                /* Decode all generated imaged Files */
-                File[] fileList = tempPath.listFiles();
-                for (int i = 0; i < fileList.length ; i++){
-                    if (fileList[i].getAbsolutePath().endsWith(".jpg")){
-                        String decodeText = Decoder.decodeImageFile(fileList[i].getAbsolutePath());
-                        echo(decodeText);
-                    }
-                }
-
-            }catch (Exception ex){
-
-                ex.printStackTrace();
-
-            }finally{
-
-                /* Remove the temp folder */
-                delete(new File(tempPathName));
-              
-            }
+            String decodeText = decodePDF(originPDFName);
+            echo(decodeText);
 
         }else if (e.getSource() == this.mExportButton){
 
+            echo("Start export...");
+            String originPDFName = this.mFileTextField.getText();
+            String decodeText = decodePDF(originPDFName);
+            String exportName = originPDFName.substring(0, originPDFName.lastIndexOf(".")) + ".csv"; 
             
+            try{
 
-            
+                File export = new File(exportName);
+                FileOutputStream fos = new FileOutputStream(export);
+
+                if (!export.exists()){
+                    export.createNewFile();
+                    echo("Create file:" + exportName);
+                }
+
+                fos.write(decodeText.getBytes());
+                fos.flush();
+                fos.close();
+
+            }catch (Exception ex){
+
+                 ex.printStackTrace();
+
+            }
+
         }else if (e.getSource() == this.mUploadButton){
 
         }
@@ -188,6 +175,55 @@ public class Main extends JFrame implements ActionListener{
      */
     private void echo(String message){
         this.mTextArea.setText(this.mTextArea.getText() + "\n" + message);
+    }
+
+    /*
+     * decode pdf function break pdf to images and decode images 
+     * to text. Return the text.
+     */
+    private String decodePDF(String filename){
+        String tempPathName = filename.substring(0, filename.lastIndexOf(File.separator)) + File.separator + "temp"; 
+        String tempPDFName = tempPathName + File.separator + "temp.pdf";
+        StringBuilder result = new StringBuilder();
+
+        try{
+
+            /* Build a folder next to target pdf and make its copy into folder*/
+            File tempPath = new File(tempPathName);
+            File originPDF = new File(filename);
+
+            tempPath.mkdir();
+            echo("Make temp directory:" + tempPathName);
+
+            Files.copy(new FileInputStream(originPDF), Paths.get(tempPDFName), REPLACE_EXISTING);
+            echo("Create temp pdf copy:" + tempPDFName);
+
+            /* Run command line tool to convert pdf to image */
+            Convertor.convertPDFToImage(tempPDFName);
+
+            /* Decode all generated imaged Files */
+            File[] fileList = tempPath.listFiles();
+            for (int i = 0; i < fileList.length ; i++){
+                if (fileList[i].getAbsolutePath().endsWith(".jpg")){
+                    String c = Decoder.decodeImageFile(fileList[i].getAbsolutePath());
+                    result.append(c);
+                    result.append("\n");
+                }
+            }
+
+        }catch (Exception ex){
+
+            ex.printStackTrace();
+
+        }finally{
+
+            /* Remove the temp folder */
+            delete(new File(tempPathName));
+         
+        }
+
+        return result.toString();
+
     }
 
 }
