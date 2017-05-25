@@ -246,7 +246,17 @@ public class Main extends JFrame implements ActionListener{
 
         for (String line : lines){
 
-            result.append(line.replaceAll(deliminator, "\""));
+            //result.append(line.replaceAll(deliminator, "\""));
+            String[] tokens = line.split(deliminator);
+            for (int i = 0; i < tokens.length ; i++ ){
+                result.append("\"");
+                result.append(tokens[i]);
+                result.append("\"");
+                if ( i < tokens.length - 1 ){
+                    result.append(",");
+                }
+            }
+            
             result.append("\n");
 
         }
