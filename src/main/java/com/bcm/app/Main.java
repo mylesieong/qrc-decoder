@@ -104,19 +104,17 @@ public class Main extends JFrame implements ActionListener{
 
           try{
 
-            this.mTextArea.setText("Start validation...");
+            echo("Start validation...");
 
             /* Build a folder next to target pdf and make its copy into folder*/
             File targetPDF = new File(fileChooserResult);
             File tempPath = new File(tempPathName);
 
             tempPath.mkdir();
-            this.mTextArea.setText(this.mTextArea.getText() + "\n"
-                    + "Make temp directory:" + tempPathName );
+            echo("Make temp directory:" + tempPathName);
 
             Files.copy(new FileInputStream(targetPDF), Paths.get(tempPDFName), REPLACE_EXISTING);
-            this.mTextArea.setText(this.mTextArea.getText() + "\n"
-                    + "Create temp pdf copy:" + tempPDFName );
+            echo("Create temp pdf copy:" + tempPDFName);
 
             /* Run command line tool to convert pdf to image */
             Convertor.convertPDFToImage(tempPDFName);
@@ -126,8 +124,7 @@ public class Main extends JFrame implements ActionListener{
             for (int i = 0; i < fileList.length ; i++){
                 if (fileList[i].getAbsolutePath().endsWith(".jpg")){
                     String decodeText = Decoder.decodeImageFile(fileList[i].getAbsolutePath());
-                    this.mTextArea.setText(this.mTextArea.getText() + "\n"
-                         + decodeText );
+                    echo(decodeText);
                 }
             }
 
@@ -162,6 +159,7 @@ public class Main extends JFrame implements ActionListener{
                 //if file is a folder and empty
                 if (file.list().length == 0){
                     file.delete();
+                    echo("delete " + file.getName());
                 }else{
                     //if file is a folder but not empty, delete sub files
                     //and remove the empty folder afterward
@@ -173,14 +171,23 @@ public class Main extends JFrame implements ActionListener{
                     if (file.list().length == 0){
                         file.delete();
                     }
+                    echo("delete " + file.getName());
                 }
 
             }else{
                 file.delete();
+                echo("delete " + file.getName());
             }
         }catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    /*
+     * helper function: echo to textArea
+     */
+    private void echo(String message){
+        this.mTextArea.setText(this.mTextArea.getText() + "\n" + message);
     }
 
 }
