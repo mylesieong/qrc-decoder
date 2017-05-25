@@ -98,46 +98,46 @@ public class Main extends JFrame implements ActionListener{
 
         }else if (e.getSource() == this.mValidateButton){
 
-            String fileChooserResult = this.mFileTextField.getText();
-            String tempPathName = fileChooserResult.substring(0, fileChooserResult.lastIndexOf(File.separator)) + File.separator + "temp"; 
+            String originPDFName = this.mFileTextField.getText();
+            String tempPathName = originPDFName.substring(0, originPDFName.lastIndexOf(File.separator)) + File.separator + "temp"; 
             String tempPDFName = tempPathName + File.separator + "temp.pdf";
 
-          try{
+            try{
 
-            echo("Start validation...");
+                echo("Start validation...");
 
-            /* Build a folder next to target pdf and make its copy into folder*/
-            File targetPDF = new File(fileChooserResult);
-            File tempPath = new File(tempPathName);
+                /* Build a folder next to target pdf and make its copy into folder*/
+                File tempPath = new File(tempPathName);
+                File originPDF = new File(originPDFName);
 
-            tempPath.mkdir();
-            echo("Make temp directory:" + tempPathName);
+                tempPath.mkdir();
+                echo("Make temp directory:" + tempPathName);
 
-            Files.copy(new FileInputStream(targetPDF), Paths.get(tempPDFName), REPLACE_EXISTING);
-            echo("Create temp pdf copy:" + tempPDFName);
+                Files.copy(new FileInputStream(originPDF), Paths.get(tempPDFName), REPLACE_EXISTING);
+                echo("Create temp pdf copy:" + tempPDFName);
 
-            /* Run command line tool to convert pdf to image */
-            Convertor.convertPDFToImage(tempPDFName);
+                /* Run command line tool to convert pdf to image */
+                Convertor.convertPDFToImage(tempPDFName);
 
-            /* Decode all generated imaged Files */
-            File[] fileList = tempPath.listFiles();
-            for (int i = 0; i < fileList.length ; i++){
-                if (fileList[i].getAbsolutePath().endsWith(".jpg")){
-                    String decodeText = Decoder.decodeImageFile(fileList[i].getAbsolutePath());
-                    echo(decodeText);
+                /* Decode all generated imaged Files */
+                File[] fileList = tempPath.listFiles();
+                for (int i = 0; i < fileList.length ; i++){
+                    if (fileList[i].getAbsolutePath().endsWith(".jpg")){
+                        String decodeText = Decoder.decodeImageFile(fileList[i].getAbsolutePath());
+                        echo(decodeText);
+                    }
                 }
-            }
 
-          }catch (Exception ex){
+            }catch (Exception ex){
 
-              ex.printStackTrace();
+                ex.printStackTrace();
 
-          }finally{
+            }finally{
 
-              /* Remove the temp folder */
-              delete(new File(tempPathName));
+                /* Remove the temp folder */
+                delete(new File(tempPathName));
               
-          }
+            }
 
         }else if (e.getSource() == this.mExportButton){
 
