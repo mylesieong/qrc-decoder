@@ -121,7 +121,8 @@ public class Main extends JFrame implements ActionListener{
                     echo("Create file:" + exportName);
                 }
 
-                fos.write(decodeText.getBytes());
+                //fos.write(decodeText.getBytes());
+                fos.write(toCSV(decodeText, "\t").getBytes());
                 fos.flush();
                 fos.close();
 
@@ -180,6 +181,7 @@ public class Main extends JFrame implements ActionListener{
     /*
      * decode pdf function break pdf to images and decode images 
      * to text. Return the text.
+     * NOTE: result text use \n to separate lines and \t to separate tokens
      */
     private String decodePDF(String filename){
         String tempPathName = filename.substring(0, filename.lastIndexOf(File.separator)) + File.separator + "temp"; 
@@ -224,6 +226,29 @@ public class Main extends JFrame implements ActionListener{
             /* Remove the temp folder */
             delete(new File(tempPathName));
          
+        }
+
+        return result.toString();
+
+    }
+
+    /*
+     * parse string line to csv format 
+     * Input string and deliminator
+     * output string
+     */
+    private String toCSV(String content, String deliminator){
+
+        if (content == null) return "";
+
+        String[] lines = content.split("\n");
+        StringBuilder result = new StringBuilder();
+
+        for (String line : lines){
+
+            result.append(line.replaceAll(deliminator, "\""));
+            result.append("\n");
+
         }
 
         return result.toString();
