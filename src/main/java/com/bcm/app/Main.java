@@ -24,6 +24,7 @@ public class Main extends JFrame implements ActionListener{
     private JTextField mFileTextField;
     private JButton mChooseButton;
     private JButton mValidateButton;
+    private JButton mExportButton;
     private JButton mUploadButton;
     private JTextArea mTextArea;
     private JScrollPane mScrollPane;
@@ -60,10 +61,15 @@ public class Main extends JFrame implements ActionListener{
         this.getContentPane().add(mChooseButton);
         
         mValidateButton = new JButton("Validate");
-        mValidateButton.setBounds(515, 15, 80, 20);
+        mValidateButton.setBounds(515, 15, 30, 20);
         mValidateButton.addActionListener(this);
         this.getContentPane().add(mValidateButton);
         
+        mExportButton = new JButton("Export");
+        mExportButton.setBounds(545, 15, 30, 20);
+        mExportButton.addActionListener(this);
+        this.getContentPane().add(mExportButton);
+
         mUploadButton = new JButton("Upload");
         mUploadButton.setBounds(605, 15, 80, 20);
         mUploadButton.addActionListener(this);
@@ -91,15 +97,16 @@ public class Main extends JFrame implements ActionListener{
             }
 
         }else if (e.getSource() == this.mValidateButton){
+
+            String fileChooserResult = this.mFileTextField.getText();
+            String tempPathName = fileChooserResult.substring(0, fileChooserResult.lastIndexOf(File.separator)) + File.separator + "temp"; 
+            String tempPDFName = tempPathName + File.separator + "temp.pdf";
+
           try{
 
             this.mTextArea.setText("Start validation...");
 
             /* Build a folder next to target pdf and make its copy into folder*/
-            String fileChooserResult = this.mFileTextField.getText();
-            String tempPathName = fileChooserResult.substring(0, fileChooserResult.lastIndexOf(File.separator)) + File.separator + "temp"; 
-            String tempPDFName = tempPathName + File.separator + "temp.pdf";
-
             File targetPDF = new File(fileChooserResult);
             File tempPath = new File(tempPathName);
 
@@ -123,14 +130,57 @@ public class Main extends JFrame implements ActionListener{
                          + decodeText );
                 }
             }
-            //String decodeText = Decoder.decodeImageFile(this.mFileTextField.getText());
-            //this.mTextArea.setText(decodeText);
 
           }catch (Exception ex){
+
               ex.printStackTrace();
+
+          }finally{
+
+              /* Remove the temp folder */
+              delete(new File(tempPathName));
+              
           }
+
+        }else if (e.getSource() == this.mExportButton){
+
+            
+
+            
         }else if (e.getSource() == this.mUploadButton){
+
         }
 
     }
+
+    /*
+     * helper function: delete file/directory (allow not empty)
+     */
+    private void delete(File file){
+        try {
+            if (file.isDirectory()){
+                //if file is a folder and empty
+                if (file.list().length == 0){
+                    file.delete();
+                }else{
+                    //if file is a folder but not empty, delete sub files
+                    //and remove the empty folder afterward
+                    String files[] = file.list();
+                    for (String temp: files){
+                        File fileToBeDelete = new File(file, temp);
+                        delete(fileToBeDelete);
+                    }
+                    if (file.list().length == 0){
+                        file.delete();
+                    }
+                }
+
+            }else{
+                file.delete();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
 }
