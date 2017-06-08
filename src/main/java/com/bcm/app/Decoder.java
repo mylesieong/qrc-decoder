@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 public class Decoder {
 
-    public final static String COMMAND = "parseQRC ";
+    public final static String COMMAND = "lib/pingLM ";
 
     public static String decodeImageFile(String filename){
         String result = "";

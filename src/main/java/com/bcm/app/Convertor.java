@@ -7,8 +7,7 @@ import java.io.File;
 
 public class Convertor {
 
-    //public final static String COMMAND = "java -jar pdfbox-app-2.0.5.jar PDFToImage ";
-    public final static String COMMAND = "./imagemagick_portable/convert -density 240 -quality 80 -trim ";
+    public final static String COMMAND = "lib/convert -density 240 -quality 80 -trim ";
 
     public static void convertPDFToImage( String filename){
         //executeCommand(COMMAND + filename);

@@ -4,8 +4,6 @@
 
 * Compile the C# code with command `csc /out:parseQRC.exe pingLM.cs /r:FreeImageNET.dll`
 
-* Add the path to _parseQRC.exe_ to System Path __OR__ set the environment variable %QRC_HOME% to the installed diretory (not necessary)
-
 * Java Runtime is installed
 
 * Install Ghostscript
@@ -70,3 +68,5 @@ The basic idea is to copy the exe to system's $TMP directory and invoke it after
 * https://stackoverflow.com/questions/600146/run-exe-which-is-packaged-inside-jar
 
 Note that the convert.exe(ImageMagick) is proved to be runable at standalone and it only needs the delegates.xml and magic.xml(not necessary) which should be present either in the same folder of convert.exe or in the same folder of where the command is invoke. 
+
+The program will call `lib/convert.exe` and `lib/pingLM.exe` from the java from a batch. Make sure these exes are available.
