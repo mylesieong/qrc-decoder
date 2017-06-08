@@ -1,38 +1,16 @@
 # QR Code Cheque Decoder
 
-## Prequisition
-
-* Compile the C# code with command `csc /out:parseQRC.exe pingLM.cs /r:FreeImageNET.dll`
+# Install from package
 
 * Java Runtime is installed
+* Ghostscript is installed
+* Copy the git repo to PC and double click the link of batch file (note that the pingLM.exe might be platform-dependent which might need a re-compilation)
 
-* Install Ghostscript
+# Build from source
 
-## Compile C# Code with C# Compiler *csc*
-
-### Compiles to executables
-
-1. Build {source-code}.cs file
-1. run cmd: `csc /out:pgm.exe csdemo.cs`
-1. run executable: `./pgm`
-
-### Compiles to DLL library
-
-1. Build {source-code}.cs file
-1. run cmd: `csc /target:library csdemo.cs`
-
-### External Dependency Injection
-
-- Dependency in *using xxx*: `csc /out:pgm.exe pingLM.cs /r:FreeImageNET.dll`
-- Dependency in `[DllImport...]`, because it is a **runtime dll binding**, so only need to ensure that dll is available in the same directory that pgm.exe is invoked (in this case the LM_Decoder.dll).
-
-## Compile Java Code
-
-`mvn clean package`
-
-## Run the Program
-
-`java -cp {name_w_path}.jar com.bcm.app.Main`
+1. Compile C# Code with C# Compiler *csc*: `csc /out:pingLM.exe pingLM.cs /r:FreeImageNET.dll` and put the pingLM.exe and 3 dll to lib/ folder
+1. Compile Java Code: `mvn clean package`
+1. Run the Program by click the shortcut link of the batch file.
 
 # Working Log
 
@@ -61,7 +39,7 @@ Concrete plan:
 * separate the screen, the user's knowledge (where is the file), the vender's knowledge (parseQRC.exe and convert.exe), action. 
 * the Action wrap the knowledge performing, and it should be testable. 
 
-## How to use the convert.exe and pingLM.exe (for deployment)
+## How to use the convert.exe and pingLM.exe (for deployment) [SOLVED]
 
 The basic idea is to copy the exe to system's $TMP directory and invoke it after copy. For java code part, please reference below:
 * https://www.mkyong.com/java/java-read-a-file-from-resources-folder/
