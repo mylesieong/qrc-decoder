@@ -20,6 +20,9 @@ import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
+import java.util.List;
+import java.util.ArrayList;
+
 public class Main extends JFrame implements ActionListener{
 
     private JTextField mFileTextField;
@@ -85,6 +88,12 @@ public class Main extends JFrame implements ActionListener{
 
     }
     
+    /* 
+     * In this method, the major action logic is specify. 
+     * If there are future changes on operation steps or 
+     * adding new steps, only need to modify code in this
+     * method.
+     */
     @Override
     public void actionPerformed(ActionEvent e){
 
@@ -101,18 +110,62 @@ public class Main extends JFrame implements ActionListener{
 
             echo("Start validation...");
             String originPDFName = this.mFileTextField.getText();
-            String decodeText = decodePDF(originPDFName);
-            echo(decodeText);
+            String tempPathName = "temp";
 
+            // Copy the target pdf to project home/temp
+            copyTargetToTemp(originPDFName, tempPathName);
+
+            // Run command line tool to convert pdf to image 
+            Command command = new Command();
+            command.setCommand("lib/convert -density 240 -quality 80 -trim temp/temp.pdf temp/temp.jpg");
+            command.runCommand();
+
+            // Decode all generated imaged Files 
+            File tempPath = new File(tempPathName);
+            File[] fileList = tempPath.listFiles();
+            for (int i = 0; i < fileList.length ; i++){
+                if (fileList[i].getAbsolutePath().endsWith(".jpg")){
+                    command.setCommand("lib/pingLM " +  fileList[i].getAbsolutePath());
+                    echo(command.runCommand());
+                }
+            }
+
+            // Delete all temp files and folder
+            delete(tempPath);
+           
         }else if (e.getSource() == this.mExportButton){
-
             echo("Start export...");
             String originPDFName = this.mFileTextField.getText();
-            String decodeText = decodePDF(originPDFName);
-            String exportName = originPDFName.substring(0, originPDFName.lastIndexOf(".")) + ".csv"; 
-            
-            try{
+            String tempPathName = "temp";
 
+            // Copy the target pdf to project home/temp
+            copyTargetToTemp(originPDFName, tempPathName);
+
+            // Run command line tool to convert pdf to image 
+            Command command = new Command();
+            command.setCommand("lib/convert -density 240 -quality 80 -trim temp/temp.pdf temp/temp.jpg");
+            command.runCommand();
+
+            // Decode all generated imaged Files 
+            File tempPath = new File(tempPathName);
+            List<Cheque> cheques = new ArrayList<Cheque>();
+            File[] fileList = tempPath.listFiles();
+            for (int i = 0; i < fileList.length ; i++){
+                if (fileList[i].getAbsolutePath().endsWith(".jpg")){
+                    command.setCommand("lib/pingLM " +  fileList[i].getAbsolutePath());
+                    cheques.add(Cheque.parse(command.runCommand()));
+                }
+            }
+
+            // Loops chq list to output csv string
+            String csvContent = "";
+            for (int i = 0; i < cheques.size() ; i++){
+                csvContent = csvContent + cheques.get(i).toCsv() + "\n";
+            }
+
+            // Output the file
+            String exportName = originPDFName.substring(0, originPDFName.lastIndexOf(".")) + ".csv"; 
+            try{
                 File export = new File(exportName);
                 FileOutputStream fos = new FileOutputStream(export);
 
@@ -121,18 +174,20 @@ public class Main extends JFrame implements ActionListener{
                     echo("Create file:" + exportName);
                 }
 
-                //fos.write(decodeText.getBytes());
-                fos.write(toCSV(decodeText, "\t").getBytes());
+                fos.write(csvContent.getBytes());
                 fos.flush();
                 fos.close();
 
             }catch (Exception ex){
-
                  ex.printStackTrace();
-
             }
 
+            // Delete all temp files and folder
+            delete(tempPath);
+
         }else if (e.getSource() == this.mUploadButton){
+
+            /* TODO */
 
         }
 
@@ -178,90 +233,23 @@ public class Main extends JFrame implements ActionListener{
         this.mTextArea.setText(this.mTextArea.getText() + "\n" + message);
     }
 
-    /*
-     * decode pdf function break pdf to images and decode images 
-     * to text. Return the text.
-     * NOTE: result text use \n to separate lines and \t to separate tokens
+
+    /* 
+     * helper function: copy target file to a specific path
      */
-    private String decodePDF(String filename){
-        String tempPathName = filename.substring(0, filename.lastIndexOf(File.separator)) + File.separator + "temp"; 
-        String tempPDFName = tempPathName + File.separator + "temp.pdf";
-        StringBuilder result = new StringBuilder();
+    private void copyTargetToTemp(String filename, String pathName){
+
+        String tempPDFName = pathName + File.separator + "temp.pdf";
 
         try{
-
             /* Build a folder next to target pdf and make its copy into folder*/
-            File tempPath = new File(tempPathName);
+            File tempPath = new File(pathName);
             File originPDF = new File(filename);
-
             tempPath.mkdir();
-            echo("Make temp directory:" + tempPathName);
-
             Files.copy(new FileInputStream(originPDF), Paths.get(tempPDFName), REPLACE_EXISTING);
-            echo("Create temp pdf copy:" + tempPDFName);
-
-            /* Run command line tool to convert pdf to image */
-            Convertor.convertPDFToImage(tempPDFName);
-
-            /* Decode all generated imaged Files */
-            File[] fileList = tempPath.listFiles();
-            for (int i = 0; i < fileList.length ; i++){
-                if (fileList[i].getAbsolutePath().endsWith(".jpg")){
-
-                    String c = Decoder.decodeImageFile(fileList[i].getAbsolutePath());
-                    if (c.compareTo("") != 0){
-                        result.append(c);
-                        result.append("\n");
-                    }
-
-                }
-            }
-
         }catch (Exception ex){
-
             ex.printStackTrace();
-
-        }finally{
-
-            /* Remove the temp folder */
-            delete(new File(tempPathName));
-         
         }
-
-        return result.toString();
-
-    }
-
-    /*
-     * parse string line to csv format 
-     * Input string and deliminator
-     * output string
-     */
-    private String toCSV(String content, String deliminator){
-
-        if (content == null) return "";
-
-        String[] lines = content.split("\n");
-        StringBuilder result = new StringBuilder();
-
-        for (String line : lines){
-
-            //result.append(line.replaceAll(deliminator, "\""));
-            String[] tokens = line.split(deliminator);
-            for (int i = 0; i < tokens.length ; i++ ){
-                result.append("\"");
-                result.append(tokens[i]);
-                result.append("\"");
-                if ( i < tokens.length - 1 ){
-                    result.append(",");
-                }
-            }
-            
-            result.append("\n");
-
-        }
-
-        return result.toString();
 
     }
 
