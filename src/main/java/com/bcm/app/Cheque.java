@@ -8,17 +8,27 @@ public class Cheque {
      * @return Cheque feedback the string into cheque object
      */
     public static Cheque parse(String blob){
-        Cheque cheque = new Cheque();
-        return cheque;
-    }
 
-    /**
-     * String util that export object to csv according to certain sequence
-     * @return String a valid csv line
-     */
-    public static String toCsv(){
-        String csvLine = "";
-        return csvLine;
+        Cheque cheque = new Cheque();
+
+        if (blob == null 
+                || blob.compareTo("") == 0
+                || blob.contains("error") ){
+            return cheque;
+        }
+
+        String[] blobTokenized = blob.split(";");
+
+        for (int i = 0 ; i < 6 ; i++){  //Tailor made for blob result from AMCM API
+            if ( i == 0) cheque.setBank(blobTokenized[i] != null ? Integer.parseInt(blobTokenized[i]) : 0 );
+            if ( i == 1) cheque.setType(blobTokenized[i] != null ? blobTokenized[i] : "" );
+            if ( i == 2) cheque.setCcy(blobTokenized[i] != null ? blobTokenized[i] : "" );
+            if ( i == 3) cheque.setHolder(blobTokenized[i] != null ? blobTokenized[i] : "" );
+            if ( i == 4) cheque.setId(blobTokenized[i] != null ? blobTokenized[i] : "" );
+            if ( i == 5) cheque.setAccount(blobTokenized[i] != null ? blobTokenized[i] : "" );
+        }
+        
+        return cheque;
     }
 
     /* Properties */
@@ -28,8 +38,10 @@ public class Cheque {
     private String id;     /* e.g. 2000106 */
     private String holder;     /* e.g. CHAN DA MAN */
     private String account;     /* e.g. 43212654334 */
+    private int amount;
+    private String envelope;
 
-    public void setBack(int bank){
+    public void setBank(int bank){
         this.bank = bank;
     }
 
@@ -51,6 +63,14 @@ public class Cheque {
 
     public void setAccount(String account){
         this.account = account;
+    }
+
+    public void setAmount(int amount){
+        this.amount = amount;
+    }
+
+    public void setEnvelope(String envelope){
+        this.envelope = envelope;
     }
 
     public int getBank(){
@@ -75,6 +95,61 @@ public class Cheque {
 
     public String getAccount(){
         return this.account;
+    }
+
+    public int getAmount(){
+        return this.amount;
+    }
+
+    public String getEnvelope(){
+        return this.envelope;
+    }
+
+    /**
+     * String util that export object to csv according to certain sequence
+     * @return String a valid csv line
+     */
+    public String toCsv(){
+
+        StringBuilder result = new StringBuilder();
+
+        /* The seq should be:
+         * Bank: Type: Ccy: ChqId: Amount: Holder: Account: Envelope
+         */
+        result.append("\"");
+        result.append(this.bank);
+        result.append("\"");
+        result.append(",");
+        result.append("\"");
+        result.append(this.type);
+        result.append("\"");
+        result.append(",");
+        result.append("\"");
+        result.append(this.ccy);
+        result.append("\"");
+        result.append(",");
+        result.append("\"");
+        result.append(this.id);
+        result.append("\"");
+        result.append(",");
+        result.append("\"");
+        result.append(this.amount);
+        result.append("\"");
+        result.append(",");
+        result.append("\"");
+        result.append(this.holder);
+        result.append("\"");
+        result.append(",");
+        result.append("\"");
+        result.append(this.account);
+        result.append("\"");
+        result.append(",");
+        result.append("\"");
+        result.append(this.envelope);
+        result.append("\"");
+
+        return result.toString();
+
     }
 
 }
