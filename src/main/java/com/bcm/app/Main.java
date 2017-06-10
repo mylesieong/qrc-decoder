@@ -153,12 +153,15 @@ public class Main extends JFrame implements ActionListener{
             for (int i = 0; i < fileList.length ; i++){
                 if (fileList[i].getAbsolutePath().endsWith(".jpg")){
                     command.setCommand("lib/pingLM " +  fileList[i].getAbsolutePath());
-                    cheques.add(Cheque.parse(command.runCommand()));
+                    Cheque newCheque = Cheque.parse(command.runCommand()); 
+                    if (newCheque!= null) cheques.add(newCheque);
                 }
             }
 
             // Loops chq list to output csv string
             String csvContent = "";
+            String csvHeader = "\"Bank\",\"Type\",\"Currency\",\"Cheque No\",\"Amount\",\"Account Name\",\"Account Number\",\"Envelope Number\"";
+            csvContent = csvContent + csvHeader + "\n";
             for (int i = 0; i < cheques.size() ; i++){
                 csvContent = csvContent + cheques.get(i).toCsv() + "\n";
             }

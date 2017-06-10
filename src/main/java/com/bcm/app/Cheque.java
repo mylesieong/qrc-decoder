@@ -5,18 +5,17 @@ public class Cheque {
     /**
      * Static util that parse string from AMCM API to Cheque object 
      * @param String stdout from amcm api 
-     * @return Cheque feedback the string into cheque object
+     * @return Cheque feedback the string into cheque object, if blob is error, then return null
      */
     public static Cheque parse(String blob){
-
-        Cheque cheque = new Cheque();
 
         if (blob == null 
                 || blob.compareTo("") == 0
                 || blob.contains("error") ){
-            return cheque;
+            return null;
         }
 
+        Cheque cheque = new Cheque();
         String[] blobTokenized = blob.split(";");
 
         for (int i = 0 ; i < 6 ; i++){  //Tailor made for blob result from AMCM API
