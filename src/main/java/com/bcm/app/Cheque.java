@@ -128,11 +128,12 @@ public class Cheque {
         result.append("\"");
         result.append(",");
         result.append("\"");
-        result.append(this.id);
+        result.append(this.account);
         result.append("\"");
         result.append(",");
         result.append("\"");
-        result.append(this.amount);
+        //result.append(this.amount);
+        result.append(this.amount==0?32:this.amount); //stub
         result.append("\"");
         result.append(",");
         result.append("\"");
@@ -140,11 +141,11 @@ public class Cheque {
         result.append("\"");
         result.append(",");
         result.append("\"");
-        result.append(this.account);
+        result.append(this.id);
         result.append("\"");
         result.append(",");
         result.append("\"");
-        result.append(this.envelope);
+        result.append(this.envelope==null?"":this.envelope);
         result.append("\"");
 
         return result.toString();
