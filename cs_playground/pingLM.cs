@@ -53,10 +53,12 @@ class HelloWorldWin {
             IntPtr ptr = (IntPtr)((UInt32)pResultIntPtr + 0 * pResultSize);
             infos[0] = (DecodeResult)Marshal.PtrToStructure(ptr, typeof(DecodeResult));
             string resultInfo = System.Text.Encoding.UTF8.GetString(infos[0].pdata_buf);
+            Console.OutputEncoding = Encoding.UTF8;
             Console.WriteLine(resultInfo);
         }
         else
         {
+            Console.OutputEncoding = Encoding.UTF8;
             Console.WriteLine("Result error");
         }
         FreeImage.Unload(img);
