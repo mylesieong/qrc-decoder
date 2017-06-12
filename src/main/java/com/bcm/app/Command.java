@@ -2,6 +2,7 @@ package com.bcm.app;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.io.File;
 
@@ -26,20 +27,24 @@ public class Command{
     public String runCommand(String command){
         System.out.println("Start run command"); //debug
         StringBuffer output = new StringBuffer();
-        Process process;
         try {
-            System.out.println("Before process exec"); //debug
-            process = Runtime.getRuntime().exec(command);
-            System.out.println("After process exec"); //debug
-            process.waitFor();
-            System.out.println("Process finished"); //debug
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String line = "";
-            System.out.println("Ready to read all output from prcoess"); //debug
-            while((line = reader.readLine()) != null){
-                output.append(line + "\n");
+            Runtime runtime = Runtime.getRuntime();
+            Process process = runtime.exec(command); //prcoess starts to run from here
+
+            InputStream is = process.getInputStream();
+            InputStreamReader isr = new InputStreamReader(is);
+            BufferedReader reader = new BufferedReader(isr);
+
+            String line = null;
+            while( (line = reader.readLine()) != null){
+                output.append(line);
+                output.append("\n");
             }
-            System.out.println("Finish read all output from prcoess"); //debug
+
+            int exitValue = process.waitFor();
+            output.append("Finish. Process Exit Value:");
+            output.append(exitValue);
+
         }catch (Exception e){
             e.printStackTrace();
         }
