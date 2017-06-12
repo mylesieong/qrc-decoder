@@ -2,6 +2,11 @@ package com.bcm.app;
 
 public class Cheque {
 
+    private static void debug(String m){
+        System.out.print("[DEBUG]");
+        System.out.println(m);
+    }
+
     /**
      * Static util that parse string from AMCM API to Cheque object 
      * @param String stdout from amcm api 
@@ -9,14 +14,74 @@ public class Cheque {
      */
     public static Cheque parse(String blob){
 
+        try{
+        String subs = blob.substring(0,50);
+        debug("In cheque string: " + subs);
+
+        byte[] foo;
+        // read: - write: utf8
+        foo = blob.getBytes();
+        debug("In cheque parsing getBytes(): " + foo);
+        debug("In cheque parsing Build UTF8 string from getBytes(): " + new String(foo, "UTF8").substring(0,50) );
+
+        // read: utf8 write: utf8
+        foo = blob.getBytes("UTF8");
+        debug("In cheque parsing getBytes(UTF8): " + foo);
+        debug("In cheque parsing Build UTF8 string from getBytes(UTF8): " + new String(foo, "UTF8").substring(0,50));
+        
+        // read: cp937 write: utf8
+        foo = blob.getBytes("Cp937");
+        debug("In cheque parsing getBytes(Cp937): " + foo);
+        debug("In cheque parsing Build UTF8 string from getBytes(Cp937): " + new String(foo, "UTF8").substring(0,50));
+
+        // read: - write: -
+        foo = blob.getBytes();
+        debug("In cheque parsing getBytes(): " + foo);
+        debug("In cheque parsing Build string from getBytes(): " + new String(foo).substring(0,50));
+
+        // read: utf8 write: -
+        foo = blob.getBytes("UTF8");
+        debug("In cheque parsing getBytes(UTF8): " + foo);
+        debug("In cheque parsing Build string from getBytes(UTF8): " + new String(foo).substring(0,50));
+
+        // read: cp937 write: -
+        foo = blob.getBytes("Cp937");
+        debug("In cheque parsing getBytes(Cp937): " + foo);
+        debug("In cheque parsing Build string from getBytes(Cp937): " + new String(foo).substring(0,50));
+
+        // read: - write: Cp937
+        foo = blob.getBytes();
+        debug("In cheque parsing getBytes(): " + foo);
+        debug("In cheque parsing Build Cp937 string from getBytes(): " + new String(foo, "Cp937").substring(0,50));
+
+        // read: utf8 write: Cp937
+        foo = blob.getBytes("UTF8");
+        debug("In cheque parsing getBytes(UTF8): " + foo);
+        debug("In cheque parsing Build Cp937 string from getBytes(UTF8): " + new String(foo, "Cp937").substring(0,50));
+
+        // read: cp937 write: Cp937
+        foo = blob.getBytes("Cp937");
+        debug("In cheque parsing getBytes(Cp937): " + foo);
+        debug("In cheque parsing Build Cp937 string from getBytes(Cp937): " + new String(foo, "Cp937").substring(0,50));
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
         if (blob == null 
                 || blob.compareTo("") == 0
                 || blob.contains("error") ){
             return null;
         }
 
+        String encodedBlob = blob; 
+        try{
+            encodedBlob = new String( blob.getBytes("UTF8") );
+        }catch(Exception e){
+            e.printStackTrace();
+        }
         Cheque cheque = new Cheque();
-        String[] blobTokenized = blob.split(";");
+        String[] blobTokenized = encodedBlob.split(";");
 
         for (int i = 0 ; i < 6 ; i++){  //Tailor made for blob result from AMCM API
             if ( i == 0) cheque.setBank(blobTokenized[i] != null ? Integer.parseInt(blobTokenized[i]) : 0 );
@@ -146,6 +211,8 @@ public class Cheque {
         result.append("\"");
         result.append(this.envelope);
         result.append("\"");
+
+        debug("Before write to csv: " + result.toString());
 
         return result.toString();
 

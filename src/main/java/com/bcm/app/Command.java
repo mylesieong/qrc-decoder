@@ -32,7 +32,7 @@ public class Command{
             Process process = runtime.exec(command); //prcoess starts to run from here
 
             InputStream is = process.getInputStream();
-            InputStreamReader isr = new InputStreamReader(is);
+            InputStreamReader isr = new InputStreamReader(is, "UTF8");
             BufferedReader reader = new BufferedReader(isr);
 
             String line = null;
@@ -49,7 +49,6 @@ public class Command{
             e.printStackTrace();
         }
 
-        System.out.println(output.toString()); //debug
         return output.toString();
     }
 
