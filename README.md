@@ -49,8 +49,11 @@ Note that the convert.exe(ImageMagick) is proved to be runable at standalone and
 
 The program will call `lib/convert.exe` and `lib/pingLM.exe` from the java from a batch. Make sure these exes are available.
 
-## Chinese name issue [SOLVED]
+## Chinese name issue - C# side [SOLVED]
 We cannot present chinese from pingLM.exe but on the GUI decode Example exe provided from AMCM, chinese is enabled. I studied and found that because pingLM.exe output to concole (using Console.WriteLine method in C#) so that we lose the UTF8 knowledge at this action. We solve it by adding Console.encoding = Encoding.UTF8 and problem solved.
 
-## Java code process.waitFor() hangs
+## Java code process.waitFor() hangs [SOLVED]
 After we change the pingLM.exe enabling UTF8, we have new problem that process.waitFor() method hangs. The solution is posted [here](https://stackoverflow.com/questions/5483830/process-waitfor-never-returns) and we will study. The git fix branch is fix_chinese. 
+
+## Chinese name issue - Java side 
+In command class, when I inject the utf8 knowledge into inputStreamReader from the command line output, the return string is good engouh to show 100% accurate chinese on JTextArea. But for the Cheque parsing method, it still goes "???". I then tried the getbyte in UTF8 manner from the blob (string injected from command output to cheque parse input) and it can show 余?傑. 
