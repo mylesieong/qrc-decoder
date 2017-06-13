@@ -1,99 +1,11 @@
 package com.bcm.app;
 
+import java.io.File;
+import java.io.FileOutputStream;
+
 public class Cheque {
 
-    private static void debug(String m){
-        System.out.print("[DEBUG]");
-        System.out.println(m);
-    }
-
-    /**
-     * Static util that parse string from AMCM API to Cheque object 
-     * @param String stdout from amcm api 
-     * @return Cheque feedback the string into cheque object, if blob is error, then return null
-     */
-    public static Cheque parse(String blob){
-
-        try{
-        String subs = blob.substring(0,50);
-        debug("In cheque string: " + subs);
-
-        byte[] foo;
-        // read: - write: utf8
-        foo = blob.getBytes();
-        debug("In cheque parsing getBytes(): " + foo);
-        debug("In cheque parsing Build UTF8 string from getBytes(): " + new String(foo, "UTF8").substring(0,50) );
-
-        // read: utf8 write: utf8
-        foo = blob.getBytes("UTF8");
-        debug("In cheque parsing getBytes(UTF8): " + foo);
-        debug("In cheque parsing Build UTF8 string from getBytes(UTF8): " + new String(foo, "UTF8").substring(0,50));
-        
-        // read: cp937 write: utf8
-        foo = blob.getBytes("Cp937");
-        debug("In cheque parsing getBytes(Cp937): " + foo);
-        debug("In cheque parsing Build UTF8 string from getBytes(Cp937): " + new String(foo, "UTF8").substring(0,50));
-
-        // read: - write: -
-        foo = blob.getBytes();
-        debug("In cheque parsing getBytes(): " + foo);
-        debug("In cheque parsing Build string from getBytes(): " + new String(foo).substring(0,50));
-
-        // read: utf8 write: -
-        foo = blob.getBytes("UTF8");
-        debug("In cheque parsing getBytes(UTF8): " + foo);
-        debug("In cheque parsing Build string from getBytes(UTF8): " + new String(foo).substring(0,50));
-
-        // read: cp937 write: -
-        foo = blob.getBytes("Cp937");
-        debug("In cheque parsing getBytes(Cp937): " + foo);
-        debug("In cheque parsing Build string from getBytes(Cp937): " + new String(foo).substring(0,50));
-
-        // read: - write: Cp937
-        foo = blob.getBytes();
-        debug("In cheque parsing getBytes(): " + foo);
-        debug("In cheque parsing Build Cp937 string from getBytes(): " + new String(foo, "Cp937").substring(0,50));
-
-        // read: utf8 write: Cp937
-        foo = blob.getBytes("UTF8");
-        debug("In cheque parsing getBytes(UTF8): " + foo);
-        debug("In cheque parsing Build Cp937 string from getBytes(UTF8): " + new String(foo, "Cp937").substring(0,50));
-
-        // read: cp937 write: Cp937
-        foo = blob.getBytes("Cp937");
-        debug("In cheque parsing getBytes(Cp937): " + foo);
-        debug("In cheque parsing Build Cp937 string from getBytes(Cp937): " + new String(foo, "Cp937").substring(0,50));
-
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-
-        if (blob == null 
-                || blob.compareTo("") == 0
-                || blob.contains("error") ){
-            return null;
-        }
-
-        String encodedBlob = blob; 
-        try{
-            encodedBlob = new String( blob.getBytes("UTF8") );
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-        Cheque cheque = new Cheque();
-        String[] blobTokenized = encodedBlob.split(";");
-
-        for (int i = 0 ; i < 6 ; i++){  //Tailor made for blob result from AMCM API
-            if ( i == 0) cheque.setBank(blobTokenized[i] != null ? Integer.parseInt(blobTokenized[i]) : 0 );
-            if ( i == 1) cheque.setType(blobTokenized[i] != null ? blobTokenized[i] : "" );
-            if ( i == 2) cheque.setCcy(blobTokenized[i] != null ? blobTokenized[i] : "" );
-            if ( i == 3) cheque.setHolder(blobTokenized[i] != null ? blobTokenized[i] : "" );
-            if ( i == 4) cheque.setId(blobTokenized[i] != null ? blobTokenized[i] : "" );
-            if ( i == 5) cheque.setAccount(blobTokenized[i] != null ? blobTokenized[i] : "" );
-        }
-        
-        return cheque;
-    }
+    private final static String EMPTY_STRING = "";
 
     /* Properties */
     private int bank;   /* e.g. 113 */
@@ -142,23 +54,23 @@ public class Cheque {
     }
 
     public String getType(){
-        return this.type;
+        return this.type != null ? this.type : EMPTY_STRING ;
     }
 
     public String getCcy(){
-        return this.ccy;
+        return this.ccy != null ? this.ccy : EMPTY_STRING ;
     }
 
     public String getId(){
-        return this.id;
+        return this.id != null ? this.id : EMPTY_STRING ;
     }
 
     public String getHolder(){
-        return this.holder;
+        return this.holder != null ? this.holder : EMPTY_STRING ;
     }
 
     public String getAccount(){
-        return this.account;
+        return this.account != null ? this.account : EMPTY_STRING ;
     }
 
     public int getAmount(){
@@ -166,9 +78,36 @@ public class Cheque {
     }
 
     public String getEnvelope(){
-        return this.envelope;
+        return this.envelope != null ? this.envelope : EMPTY_STRING ;
     }
 
+    /**
+     * Static util that parse string from AMCM API to Cheque object 
+     * @param String stdout from amcm api 
+     * @return Cheque feedback the string into cheque object, if blob is error, then return null
+     */
+    public static Cheque parse(String blob){
+        
+        if (blob == null 
+                || blob.compareTo(EMPTY_STRING) == 0
+                || blob.contains("error") ){
+            return null;
+        }
+
+        Cheque cheque = new Cheque();
+        String[] blobTokenized = blob.split(";");
+
+        //Tailor made for blob result from AMCM API
+        cheque.setBank(blobTokenized[0] != null ? Integer.parseInt(blobTokenized[0]) : 0 );
+        cheque.setType(blobTokenized[1]);
+        cheque.setCcy(blobTokenized[2]);
+        cheque.setHolder(blobTokenized[3]);
+        cheque.setId(blobTokenized[4]);
+        cheque.setAccount(blobTokenized[5]);
+        
+        return cheque;
+    }
+    
     /**
      * String util that export object to csv according to certain sequence
      * @return String a valid csv line
@@ -181,38 +120,36 @@ public class Cheque {
          * Bank: Type: Ccy: ChqId: Amount: Holder: Account: Envelope
          */
         result.append("\"");
-        result.append(this.bank);
+        result.append(this.getBank());
         result.append("\"");
         result.append(",");
         result.append("\"");
-        result.append(this.type);
+        result.append(this.getType());
         result.append("\"");
         result.append(",");
         result.append("\"");
-        result.append(this.ccy);
+        result.append(this.getCcy());
         result.append("\"");
         result.append(",");
         result.append("\"");
-        result.append(this.id);
+        result.append(this.getId());
         result.append("\"");
         result.append(",");
         result.append("\"");
-        result.append(this.amount);
+        result.append(this.getAmount());
         result.append("\"");
         result.append(",");
         result.append("\"");
-        result.append(this.holder);
+        result.append(this.getHolder());
         result.append("\"");
         result.append(",");
         result.append("\"");
-        result.append(this.account);
+        result.append(this.getAccount());
         result.append("\"");
         result.append(",");
         result.append("\"");
-        result.append(this.envelope);
+        result.append(this.getEnvelope());
         result.append("\"");
-
-        debug("Before write to csv: " + result.toString());
 
         return result.toString();
 
