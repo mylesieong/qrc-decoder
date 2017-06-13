@@ -102,8 +102,8 @@ public class Cheque {
         cheque.setType(blobTokenized[1]);
         cheque.setCcy(blobTokenized[2]);
         cheque.setHolder(blobTokenized[3]);
-        cheque.setId(blobTokenized[4]);
-        cheque.setAccount(blobTokenized[5]);
+        cheque.setAccount(blobTokenized[4]);
+        cheque.setId(blobTokenized[5]);
         
         return cheque;
     }
