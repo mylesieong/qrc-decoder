@@ -1,40 +1,16 @@
 # QR Code Cheque Decoder
 
-## Prequisition
-
-* Compile the C# code with command `csc /out:parseQRC.exe pingLM.cs /r:FreeImageNET.dll`
-
-* Add the path to _parseQRC.exe_ to System Path __OR__ set the environment variable %QRC_HOME% to the installed diretory (not necessary)
+# Install from package
 
 * Java Runtime is installed
+* Ghostscript is installed
+* Copy the git repo to PC and double click the link of batch file (note that the pingLM.exe might be platform-dependent which might need a re-compilation)
 
-* Install Ghostscript
+# Build from source
 
-## Compile C# Code with C# Compiler *csc*
-
-### Compiles to executables
-
-1. Build {source-code}.cs file
-1. run cmd: `csc /out:pgm.exe csdemo.cs`
-1. run executable: `./pgm`
-
-### Compiles to DLL library
-
-1. Build {source-code}.cs file
-1. run cmd: `csc /target:library csdemo.cs`
-
-### External Dependency Injection
-
-- Dependency in *using xxx*: `csc /out:pgm.exe pingLM.cs /r:FreeImageNET.dll`
-- Dependency in `[DllImport...]`, because it is a **runtime dll binding**, so only need to ensure that dll is available in the same directory that pgm.exe is invoked (in this case the LM_Decoder.dll).
-
-## Compile Java Code
-
-`mvn clean package`
-
-## Run the Program
-
-`java -cp {name_w_path}.jar com.bcm.app.Main`
+1. Compile C# Code with C# Compiler *csc*: `csc /out:pingLM.exe pingLM.cs /r:FreeImageNET.dll` and put the pingLM.exe and 3 dll to lib/ folder
+1. Compile Java Code: `mvn clean package`
+1. Run the Program by click the shortcut link of the batch file.
 
 # Working Log
 
@@ -63,10 +39,21 @@ Concrete plan:
 * separate the screen, the user's knowledge (where is the file), the vender's knowledge (parseQRC.exe and convert.exe), action. 
 * the Action wrap the knowledge performing, and it should be testable. 
 
-## How to use the convert.exe and pingLM.exe (for deployment)
+## How to use the convert.exe and pingLM.exe (for deployment) [SOLVED]
 
 The basic idea is to copy the exe to system's $TMP directory and invoke it after copy. For java code part, please reference below:
 * https://www.mkyong.com/java/java-read-a-file-from-resources-folder/
 * https://stackoverflow.com/questions/600146/run-exe-which-is-packaged-inside-jar
 
 Note that the convert.exe(ImageMagick) is proved to be runable at standalone and it only needs the delegates.xml and magic.xml(not necessary) which should be present either in the same folder of convert.exe or in the same folder of where the command is invoke. 
+
+The program will call `lib/convert.exe` and `lib/pingLM.exe` from the java from a batch. Make sure these exes are available.
+
+## Chinese name issue - C# side [SOLVED]
+We cannot present chinese from pingLM.exe but on the GUI decode Example exe provided from AMCM, chinese is enabled. I studied and found that because pingLM.exe output to concole (using Console.WriteLine method in C#) so that we lose the UTF8 knowledge at this action. We solve it by adding Console.encoding = Encoding.UTF8 and problem solved.
+
+## Java code process.waitFor() hangs [SOLVED]
+After we change the pingLM.exe enabling UTF8, we have new problem that process.waitFor() method hangs. The solution is posted [here](https://stackoverflow.com/questions/5483830/process-waitfor-never-returns) and we will study. The git fix branch is fix_chinese. 
+
+## Chinese name issue - Java side 
+In command class, when I inject the utf8 knowledge into inputStreamReader from the command line output, the return string is good engouh to show 100% accurate chinese on JTextArea. But for the Cheque parsing method, it still goes "???". I then tried the getbyte in UTF8 manner from the blob (string injected from command output to cheque parse input) and it can show 余?傑. 
