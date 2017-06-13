@@ -9,8 +9,6 @@ import java.io.File;
 public class Command{
 
     private String command;
-    // COMMAND = "lib/pingLM ";
-    // COMMAND = "lib/convert -density 240 -quality 80 -trim ";
 
     public void setCommand(String command){
         this.command = command;
@@ -25,9 +23,11 @@ public class Command{
     }
 
     public String runCommand(String command){
-        System.out.println("Start run command"); //debug
+
         StringBuffer output = new StringBuffer();
+
         try {
+
             Runtime runtime = Runtime.getRuntime();
             Process process = runtime.exec(command); //prcoess starts to run from here
 

@@ -43,15 +43,17 @@ public class Main extends JFrame implements ActionListener{
     }
 
     public JFileChooser getFileChooser(){
+
         if ( this.mFileChooser == null){
             this.mFileChooser = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
         }
         return this.mFileChooser;
+
     }
         
     public void initialize() {
 
-        this.setBounds(100, 100, 720, 360);
+        this.setBounds(100, 100, 790, 360);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.getContentPane().setLayout(null);
         
@@ -65,23 +67,23 @@ public class Main extends JFrame implements ActionListener{
         this.getContentPane().add(mChooseButton);
         
         mValidateButton = new JButton("Validate");
-        mValidateButton.setBounds(515, 15, 30, 20);
+        mValidateButton.setBounds(510, 15, 80, 20);
         mValidateButton.addActionListener(this);
         this.getContentPane().add(mValidateButton);
         
         mExportButton = new JButton("Export");
-        mExportButton.setBounds(545, 15, 30, 20);
+        mExportButton.setBounds(600, 15, 80, 20);
         mExportButton.addActionListener(this);
         this.getContentPane().add(mExportButton);
 
         mUploadButton = new JButton("Upload");
-        mUploadButton.setBounds(605, 15, 80, 20);
+        mUploadButton.setBounds(690, 15, 80, 20);
         mUploadButton.addActionListener(this);
         this.getContentPane().add(mUploadButton);
         
         mTextArea = new JTextArea("");
         mScrollPane = new JScrollPane(mTextArea);
-        mScrollPane.setBounds(15, 50, 670, 250);
+        mScrollPane.setBounds(15, 50, 755, 270);
         this.getContentPane().add(mScrollPane);
         
         this.setResizable(false);
@@ -177,7 +179,7 @@ public class Main extends JFrame implements ActionListener{
                     echo("Create file:" + exportName);
                 }
 
-                fos.write(csvContent.getBytes());
+                fos.write(csvContent.getBytes("UTF8"));
                 fos.flush();
                 fos.close();
 
