@@ -55,5 +55,6 @@ We cannot present chinese from pingLM.exe but on the GUI decode Example exe prov
 ## Java code process.waitFor() hangs [SOLVED]
 After we change the pingLM.exe enabling UTF8, we have new problem that process.waitFor() method hangs. The solution is posted [here](https://stackoverflow.com/questions/5483830/process-waitfor-never-returns) and we will study. The git fix branch is fix_chinese. 
 
-## Chinese name issue - Java side 
+## Chinese name issue - Java side [SOLVED]
 In command class, when I inject the utf8 knowledge into inputStreamReader from the command line output, the return string is good engouh to show 100% accurate chinese on JTextArea. But for the Cheque parsing method, it still goes "???". I then tried the getbyte in UTF8 manner from the blob (string injected from command output to cheque parse input) and it can show 余?傑. 
+I solve it with collaborating the fact that string represent different char so that when we write a java string to file, be aware of the encoding method we chose in order not to lose the resolution (like this time, our mistake is we write a chinese to fileoutputstream with getBytes(ASCII)).
