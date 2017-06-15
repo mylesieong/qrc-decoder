@@ -29,7 +29,6 @@ public class Main extends JFrame implements ActionListener{
     private JButton mChooseButton;
     private JButton mValidateButton;
     private JButton mExportButton;
-    private JButton mUploadButton;
     private JTextArea mTextArea;
     private JScrollPane mScrollPane;
     private JFileChooser mFileChooser;
@@ -53,7 +52,7 @@ public class Main extends JFrame implements ActionListener{
         
     public void initialize() {
 
-        this.setBounds(100, 100, 790, 360);
+        this.setBounds(100, 100, 700, 360);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.getContentPane().setLayout(null);
         
@@ -76,14 +75,9 @@ public class Main extends JFrame implements ActionListener{
         mExportButton.addActionListener(this);
         this.getContentPane().add(mExportButton);
 
-        mUploadButton = new JButton("Upload");
-        mUploadButton.setBounds(690, 15, 80, 20);
-        mUploadButton.addActionListener(this);
-        this.getContentPane().add(mUploadButton);
-        
         mTextArea = new JTextArea("");
         mScrollPane = new JScrollPane(mTextArea);
-        mScrollPane.setBounds(15, 50, 755, 270);
+        mScrollPane.setBounds(15, 50, 665, 270);
         this.getContentPane().add(mScrollPane);
         
         this.setResizable(false);
@@ -190,12 +184,7 @@ public class Main extends JFrame implements ActionListener{
             // Delete all temp files and folder
             delete(tempPath);
 
-        }else if (e.getSource() == this.mUploadButton){
-
-            /* TODO */
-
         }
-
     }
 
     /*
