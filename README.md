@@ -29,7 +29,6 @@ Add the csv exporting button and tested
 # Issues Lot
 
 ## How to refactor the project to be testable 
-
 Principle:
 * SOLID, KISS, DRY
 * No design pattern is needed
@@ -40,7 +39,6 @@ Concrete plan:
 * the Action wrap the knowledge performing, and it should be testable. 
 
 ## How to use the convert.exe and pingLM.exe (for deployment) [SOLVED]
-
 The basic idea is to copy the exe to system's $TMP directory and invoke it after copy. For java code part, please reference below:
 * https://www.mkyong.com/java/java-read-a-file-from-resources-folder/
 * https://stackoverflow.com/questions/600146/run-exe-which-is-packaged-inside-jar
@@ -58,3 +56,6 @@ After we change the pingLM.exe enabling UTF8, we have new problem that process.w
 ## Chinese name issue - Java side [SOLVED]
 In command class, when I inject the utf8 knowledge into inputStreamReader from the command line output, the return string is good engouh to show 100% accurate chinese on JTextArea. But for the Cheque parsing method, it still goes "???". I then tried the getbyte in UTF8 manner from the blob (string injected from command output to cheque parse input) and it can show 余?傑. 
 I solve it with collaborating the fact that string represent different char so that when we write a java string to file, be aware of the encoding method we chose in order not to lose the resolution (like this time, our mistake is we write a chinese to fileoutputstream with getBytes(ASCII)).
+
+## Detect multiple pdf [SOLVE]
+The application is required to read multiple pdf in a folder. This is poc by using imageMagick convert exe by passing in wildcard \*.pdf and it still can merge the output image to seqence.

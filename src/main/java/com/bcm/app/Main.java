@@ -45,6 +45,7 @@ public class Main extends JFrame implements ActionListener{
 
         if ( this.mFileChooser == null){
             this.mFileChooser = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+            //add this.mFileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         }
         return this.mFileChooser;
 
@@ -114,6 +115,7 @@ public class Main extends JFrame implements ActionListener{
             // Run command line tool to convert pdf to image 
             Command command = new Command();
             command.setCommand("lib/convert -density 240 -quality 80 -trim temp/temp.pdf temp/temp.jpg");
+            //proven: command.setCommand("lib/convert -density 240 -quality 80 -trim temp/*.pdf temp/temp.jpg"); will eat all pdf and gen jpgs by total numbering
             command.runCommand();
 
             // Decode all generated imaged Files 
@@ -140,6 +142,7 @@ public class Main extends JFrame implements ActionListener{
             // Run command line tool to convert pdf to image 
             Command command = new Command();
             command.setCommand("lib/convert -density 240 -quality 80 -trim temp/temp.pdf temp/temp.jpg");
+            //proven: command.setCommand("lib/convert -density 240 -quality 80 -trim temp/*.pdf temp/temp.jpg"); will eat all pdf and gen jpgs by total numbering
             command.runCommand();
 
             // Decode all generated imaged Files 
