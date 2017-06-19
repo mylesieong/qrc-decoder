@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
@@ -106,16 +107,24 @@ public class Main extends JFrame implements ActionListener{
         }else if (e.getSource() == this.mValidateButton){
 
             echo("Start validation...");
-            String originPDFName = this.mFileTextField.getText();
+            String targetFolder = this.mFileTextField.getText();
             String tempPathName = "temp";
 
-            // Copy the target pdf to project home/temp
-            copyTargetToTemp(originPDFName, tempPathName);
+            // Copy the target pdf under a selected folder to project home/temp
+            File target = new File(targetFolder);
+            File[] pdfList = target.listFiles(new FileFilter(){
+                @Override 
+                public boolean accept(File f){
+                    return true; // TODO
+                }
+            });
+            for (File f : pdfList){
+                copyTargetToTemp(f.getAbsolutePath(), tempPathName);
+            }
 
             // Run command line tool to convert pdf to image 
             Command command = new Command();
-            command.setCommand("lib/convert -density 240 -quality 80 -trim temp/temp.pdf temp/temp.jpg");
-            //proven: command.setCommand("lib/convert -density 240 -quality 80 -trim temp/*.pdf temp/temp.jpg"); will eat all pdf and gen jpgs by total numbering
+            command.setCommand("lib/convert -density 240 -quality 80 -trim temp/*.pdf temp/temp.jpg"); //Proven eat all pdfs
             command.runCommand();
 
             // Decode all generated imaged Files 
@@ -133,16 +142,24 @@ public class Main extends JFrame implements ActionListener{
            
         }else if (e.getSource() == this.mExportButton){
             echo("Start export...");
-            String originPDFName = this.mFileTextField.getText();
+            String targetFolder = this.mFileTextField.getText();
             String tempPathName = "temp";
 
-            // Copy the target pdf to project home/temp
-            copyTargetToTemp(originPDFName, tempPathName);
+            // Copy the target pdf under a selected folder to project home/temp
+            File target = new File(targetFolder);
+            File[] pdfList = target.listFiles(new FileFilter(){
+                @Override 
+                public boolean accept(File f){
+                    return true; // TODO
+                }
+            });
+            for (File f : pdfList){
+                copyTargetToTemp(f.getAbsolutePath(), tempPathName);
+            }
 
             // Run command line tool to convert pdf to image 
             Command command = new Command();
-            command.setCommand("lib/convert -density 240 -quality 80 -trim temp/temp.pdf temp/temp.jpg");
-            //proven: command.setCommand("lib/convert -density 240 -quality 80 -trim temp/*.pdf temp/temp.jpg"); will eat all pdf and gen jpgs by total numbering
+            command.setCommand("lib/convert -density 240 -quality 80 -trim temp/*.pdf temp/temp.jpg"); //Proven eat all pdfs
             command.runCommand();
 
             // Decode all generated imaged Files 
@@ -166,7 +183,7 @@ public class Main extends JFrame implements ActionListener{
             }
 
             // Output the file
-            String exportName = originPDFName.substring(0, originPDFName.lastIndexOf(".")) + ".csv"; 
+            String exportName = targetFolder.substring(0, targetFolder.lastIndexOf(".")) + ".csv"; 
             try{
                 File export = new File(exportName);
                 FileOutputStream fos = new FileOutputStream(export);
@@ -236,7 +253,8 @@ public class Main extends JFrame implements ActionListener{
      */
     private void copyTargetToTemp(String filename, String pathName){
 
-        String tempPDFName = pathName + File.separator + "temp.pdf";
+        String pdfName = filename.substring(filename.lastIndexOf(File.separator)); 
+        String tempPDFName = pathName + File.separator + pdfName;
 
         try{
             /* Build a folder next to target pdf and make its copy into folder*/
