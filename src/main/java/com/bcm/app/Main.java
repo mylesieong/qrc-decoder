@@ -45,7 +45,7 @@ public class Main extends JFrame implements ActionListener{
 
         if ( this.mFileChooser == null){
             this.mFileChooser = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
-            //add this.mFileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            this.mFileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         }
         return this.mFileChooser;
 
