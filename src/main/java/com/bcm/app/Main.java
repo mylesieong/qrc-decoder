@@ -115,7 +115,9 @@ public class Main extends JFrame implements ActionListener{
             File[] pdfList = target.listFiles(new FileFilter(){
                 @Override 
                 public boolean accept(File f){
-                    return true; // TODO
+                    String filetype = f.getName().substring(f.lastIndexOf("."));
+                    boolean result = filetype.compareToIgnoreCase("pdf");
+                    return result;
                 }
             });
             for (File f : pdfList){
@@ -150,7 +152,9 @@ public class Main extends JFrame implements ActionListener{
             File[] pdfList = target.listFiles(new FileFilter(){
                 @Override 
                 public boolean accept(File f){
-                    return true; // TODO
+                    String filetype = f.getName().substring(f.lastIndexOf("."));
+                    boolean result = filetype.compareToIgnoreCase("pdf");
+                    return result;
                 }
             });
             for (File f : pdfList){
@@ -183,7 +187,7 @@ public class Main extends JFrame implements ActionListener{
             }
 
             // Output the file
-            String exportName = targetFolder.substring(0, targetFolder.lastIndexOf(".")) + ".csv"; 
+            String exportName = targetFolder + File.separator + "output.csv"; 
             try{
                 File export = new File(exportName);
                 FileOutputStream fos = new FileOutputStream(export);
