@@ -13,6 +13,7 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileSystemView;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
+import javax.swing.JLabel;
 import javax.swing.JTextArea;
 import javax.swing.JScrollPane;
 import javax.swing.JDialog;
@@ -33,6 +34,13 @@ public class Main extends JFrame implements ActionListener{
     private JTextArea mTextArea;
     private JScrollPane mScrollPane;
     private JFileChooser mFileChooser;
+    private JLabel mAmountLabel;
+    private JLabel mQuantityLabel;
+    private JLabel mUnmatchLabel;
+    private JLabel mAmount;
+    private JLabel mQuantity;
+    private JLabel mUnmatch;
+
 
     public static void main( String[] args ){
 
@@ -82,6 +90,30 @@ public class Main extends JFrame implements ActionListener{
         mScrollPane.setBounds(15, 50, 665, 220);
         this.getContentPane().add(mScrollPane);
         
+        mAmountLabel = new JLabel("Total Amount(HKD/MOP):");
+        mAmountLabel.setBounds(15, 270, 150, 20);
+        this.getContentPane().add(mAmountLabel);
+
+        mAmount = new JLabel("{amount}");
+        mAmount.setBounds(160, 270, 150, 20);
+        this.getContentPane().add(mAmount);
+
+        mQuantityLabel = new JLabel("Total Qty(HKD/MOP):");
+        mQuantityLabel.setBounds(15, 290, 150, 20);
+        this.getContentPane().add(mQuantityLabel);
+
+        mQuantity = new JLabel("{qty}");
+        mQuantity.setBounds(160, 290, 150, 20);
+        this.getContentPane().add(mQuantity);
+
+        mUnmatchLabel = new JLabel("Unmatchable:");
+        mUnmatchLabel.setBounds(15, 310, 150, 20);
+        this.getContentPane().add(mUnmatchLabel);
+
+        mUnmatch = new JLabel("{um}");
+        mUnmatch.setBounds(160, 310, 150, 20);
+        this.getContentPane().add(mUnmatch);
+
         this.setResizable(false);
 
     }
@@ -125,15 +157,37 @@ public class Main extends JFrame implements ActionListener{
                 }
             });
 
+            int lost = 0;
             for ( File f : fileList ){
                 Cheque newCheque = Cheque.parse(Command.runCommand("lib/pingLM " +  f.getAbsolutePath())); 
-                if (newCheque != null) cheques.add(newCheque);
+                if (newCheque != null){
+                    cheques.add(newCheque);
+                }else{
+                    lost = lost + 1;
+                }
             }
 
             // Output statistic 
+            int amountHKD = 0;
+            int amountMOP = 0;
+            int qtyHKD = 0;
+            int qtyMOP = 0;
+
             for ( Cheque c : cheques ){
-                echo(c + "\n");
+                echo(c.toString());
+                if (c.getCcy().compareTo("HKD")==0){
+                    amountHKD += c.getAmount();
+                    qtyHKD += 1;
+                }
+                if (c.getCcy().compareTo("MOP")==0){
+                    amountMOP += c.getAmount();
+                    qtyMOP += 1;
+                }
             }
+
+            this.mAmount.setText(Integer.toString(amountHKD) + " / " + Integer.toString(amountMOP));
+            this.mQuantity.setText(Integer.toString(qtyHKD) + " / " + Integer.toString(qtyMOP));
+            this.mUnmatch.setText(Integer.toString(lost));
 
             // Delete all temp files and folder
             delete(tempPath);
