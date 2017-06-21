@@ -155,4 +155,28 @@ public class Cheque {
 
     }
 
+    @Override
+    public String toString(){
+
+        StringBuilder result = new StringBuilder();
+
+        result.append(this.getBank());
+        result.append(":");
+        result.append(this.getType());
+        result.append(":");
+        result.append(this.getCcy());
+        result.append(":");
+        result.append(this.getId());
+        result.append(":");
+        result.append(this.getAmount());
+        result.append(":");
+        result.append(this.getHolder());
+        result.append(":");
+        result.append(this.getAccount());
+        result.append(":");
+        result.append(this.getEnvelope());
+
+        return result.toString();
+
+    }
 }

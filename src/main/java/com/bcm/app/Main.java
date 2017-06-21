@@ -79,7 +79,7 @@ public class Main extends JFrame implements ActionListener{
 
         mTextArea = new JTextArea("");
         mScrollPane = new JScrollPane(mTextArea);
-        mScrollPane.setBounds(15, 50, 665, 270);
+        mScrollPane.setBounds(15, 50, 665, 220);
         this.getContentPane().add(mScrollPane);
         
         this.setResizable(false);
@@ -110,33 +110,29 @@ public class Main extends JFrame implements ActionListener{
             String targetFolder = this.mFileTextField.getText();
             String tempPathName = "temp";
 
-            // Copy the target pdf under a selected folder to project home/temp
-            File target = new File(targetFolder);
-            File[] pdfList = target.listFiles(new FileFilter(){
-                @Override 
-                public boolean accept(File f){
-                    String filetype = f.getName().substring(f.lastIndexOf("."));
-                    boolean result = filetype.compareToIgnoreCase("pdf");
-                    return result;
-                }
-            });
-            for (File f : pdfList){
-                copyTargetToTemp(f.getAbsolutePath(), tempPathName);
-            }
+            copyPDFs(targetFolder, tempPathName);
 
-            // Run command line tool to convert pdf to image 
-            Command command = new Command();
-            command.setCommand("lib/convert -density 240 -quality 80 -trim temp/*.pdf temp/temp.jpg"); //Proven eat all pdfs
-            command.runCommand();
+            convertPDFs(tempPathName);
 
             // Decode all generated imaged Files 
             File tempPath = new File(tempPathName);
-            File[] fileList = tempPath.listFiles();
-            for (int i = 0; i < fileList.length ; i++){
-                if (fileList[i].getAbsolutePath().endsWith(".jpg")){
-                    command.setCommand("lib/pingLM " +  fileList[i].getAbsolutePath());
-                    echo(command.runCommand());
+            List<Cheque> cheques = new ArrayList<Cheque>();
+            File[] fileList = tempPath.listFiles(new FileFilter(){
+                @Override 
+                public boolean accept(File f){
+                    String type =f.getName().substring(f.getName().lastIndexOf(".") + 1);
+                    return type.compareToIgnoreCase("jpg") == 0;
                 }
+            });
+
+            for ( File f : fileList ){
+                Cheque newCheque = Cheque.parse(Command.runCommand("lib/pingLM " +  f.getAbsolutePath())); 
+                if (newCheque != null) cheques.add(newCheque);
+            }
+
+            // Output statistic 
+            for ( Cheque c : cheques ){
+                echo(c + "\n");
             }
 
             // Delete all temp files and folder
@@ -147,35 +143,24 @@ public class Main extends JFrame implements ActionListener{
             String targetFolder = this.mFileTextField.getText();
             String tempPathName = "temp";
 
-            // Copy the target pdf under a selected folder to project home/temp
-            File target = new File(targetFolder);
-            File[] pdfList = target.listFiles(new FileFilter(){
-                @Override 
-                public boolean accept(File f){
-                    String filetype = f.getName().substring(f.lastIndexOf("."));
-                    boolean result = filetype.compareToIgnoreCase("pdf");
-                    return result;
-                }
-            });
-            for (File f : pdfList){
-                copyTargetToTemp(f.getAbsolutePath(), tempPathName);
-            }
+            copyPDFs(targetFolder, tempPathName);
 
-            // Run command line tool to convert pdf to image 
-            Command command = new Command();
-            command.setCommand("lib/convert -density 240 -quality 80 -trim temp/*.pdf temp/temp.jpg"); //Proven eat all pdfs
-            command.runCommand();
+            convertPDFs(tempPathName);
 
             // Decode all generated imaged Files 
             File tempPath = new File(tempPathName);
             List<Cheque> cheques = new ArrayList<Cheque>();
-            File[] fileList = tempPath.listFiles();
-            for (int i = 0; i < fileList.length ; i++){
-                if (fileList[i].getAbsolutePath().endsWith(".jpg")){
-                    command.setCommand("lib/pingLM " +  fileList[i].getAbsolutePath());
-                    Cheque newCheque = Cheque.parse(command.runCommand()); 
-                    if (newCheque!= null) cheques.add(newCheque);
+            File[] fileList = tempPath.listFiles(new FileFilter(){
+                @Override 
+                public boolean accept(File f){
+                    String type =f.getName().substring(f.getName().lastIndexOf(".") + 1);
+                    return type.compareToIgnoreCase("jpg") == 0;
                 }
+            });
+
+            for ( File f : fileList ){
+                Cheque newCheque = Cheque.parse(Command.runCommand("lib/pingLM " +  f.getAbsolutePath())); 
+                if (newCheque != null) cheques.add(newCheque);
             }
 
             // Loops chq list to output csv string
@@ -209,6 +194,53 @@ public class Main extends JFrame implements ActionListener{
             delete(tempPath);
 
         }
+    }
+
+    /* 
+     * helper function: copy pdfs under target folder to temp folder 
+     */
+    private void copyPDFs(String from, String to){
+
+        File target = new File(from);
+
+        File[] pdfList = target.listFiles(new FileFilter(){
+            @Override 
+            public boolean accept(File f){
+                String type =f.getName().substring(f.getName().lastIndexOf(".") + 1);
+                return type.compareToIgnoreCase("pdf") == 0;
+            }
+        });
+
+        for (File f : pdfList){
+            copyPDF(f.getAbsolutePath(), to);
+        }
+    } 
+
+    /* 
+     * helper function: copy target file to a specific path
+     */
+    private void copyPDF(String file, String path){
+
+        String pdfName = file.substring(file.lastIndexOf(File.separator)); 
+        String tempPDFName = path + File.separator + pdfName;
+
+        try{
+            /* Build a folder next to target pdf and make its copy into folder*/
+            File tempPath = new File(path);
+            File originPDF = new File(file);
+            tempPath.mkdir();
+            Files.copy(new FileInputStream(originPDF), Paths.get(tempPDFName), REPLACE_EXISTING);
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
+
+    }
+
+    /*
+     * helper function: convert pdfs under given folder to jpg at same location
+     */
+    private void convertPDFs(String path){
+        Command.runCommand("lib/convert -density 240 -quality 80 -trim " + path + "/*.pdf temp/temp.jpg"); //wildcard eats all pdfs
     }
 
     /*
@@ -249,27 +281,6 @@ public class Main extends JFrame implements ActionListener{
      */
     private void echo(String message){
         this.mTextArea.setText(this.mTextArea.getText() + "\n" + message);
-    }
-
-
-    /* 
-     * helper function: copy target file to a specific path
-     */
-    private void copyTargetToTemp(String filename, String pathName){
-
-        String pdfName = filename.substring(filename.lastIndexOf(File.separator)); 
-        String tempPDFName = pathName + File.separator + pdfName;
-
-        try{
-            /* Build a folder next to target pdf and make its copy into folder*/
-            File tempPath = new File(pathName);
-            File originPDF = new File(filename);
-            tempPath.mkdir();
-            Files.copy(new FileInputStream(originPDF), Paths.get(tempPDFName), REPLACE_EXISTING);
-        }catch (Exception ex){
-            ex.printStackTrace();
-        }
-
     }
 
 }

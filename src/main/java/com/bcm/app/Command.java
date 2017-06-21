@@ -8,21 +8,7 @@ import java.io.File;
 
 public class Command{
 
-    private String command;
-
-    public void setCommand(String command){
-        this.command = command;
-    }
-
-    public String getCommand(){
-        return this.command;
-    }
-
-    public String runCommand(){
-        return runCommand(this.command);
-    }
-
-    public String runCommand(String command){
+    public static String runCommand(String command){
 
         StringBuffer output = new StringBuffer();
 
