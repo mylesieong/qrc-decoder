@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 public class Cheque {
 
     private final static String EMPTY_STRING = "";
+    private final static Cheque EMPTY_CHEQUE = new Cheque();
 
     /* Properties */
     private int bank;   /* e.g. 113 */
@@ -88,13 +89,14 @@ public class Cheque {
      */
     public static Cheque parse(String blob){
         
+        Cheque cheque = Cheque.getEmptyCheque();
+
         if (blob == null 
                 || blob.compareTo(EMPTY_STRING) == 0
                 || blob.contains("error") ){
-            return null;
+            return cheque;  //empty cheque
         }
 
-        Cheque cheque = new Cheque();
         String[] blobTokenized = blob.split(";");
 
         //Tailor made for blob result from AMCM API
@@ -108,6 +110,13 @@ public class Cheque {
         return cheque;
     }
     
+    /**
+     * Factory method: get Empty Cheque
+     */
+    public static Cheque getEmptyCheque(){
+        return new Cheque();    
+    }
+
     /**
      * String util that export object to csv according to certain sequence
      * @return String a valid csv line
@@ -153,6 +162,47 @@ public class Cheque {
 
         return result.toString();
 
+    }
+
+    /**
+     * Return whether Cheque is empty 
+     * @return boolean 
+     */
+    public boolean isEmpty(){
+        return this.equals(EMPTY_CHEQUE);
+    }
+
+    @Override
+    public boolean equals(Object obj){
+        if ( !(obj instanceof Cheque) ){
+            return false;
+        }
+
+        Cheque opp = (Cheque)obj;
+
+        return this.getBank() == opp.getBank() &&
+               this.getType().compareTo(opp.getType()) == 0 && 
+               this.getCcy().compareTo(opp.getCcy()) == 0 && 
+               this.getId().compareTo(opp.getId()) == 0 && 
+               this.getHolder().compareTo(opp.getHolder()) == 0 && 
+               this.getAccount().compareTo(opp.getAccount()) == 0 && 
+               this.getAmount() == opp.getAmount() &&
+               this.getEnvelope().compareTo(opp.getEnvelope()) == 0 ; 
+    }
+
+    /**
+     * Constructor: Cheque()
+     */
+    private Cheque(){
+        super();
+        this.setBank(0);
+        this.setType(EMPTY_STRING);
+        this.setCcy(EMPTY_STRING);
+        this.setId(EMPTY_STRING);
+        this.setHolder(EMPTY_STRING);
+        this.setAccount(EMPTY_STRING);
+        this.setAmount(0);
+        this.setEnvelope(EMPTY_STRING);
     }
 
     @Override

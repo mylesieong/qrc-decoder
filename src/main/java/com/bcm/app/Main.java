@@ -157,17 +157,13 @@ public class Main extends JFrame implements ActionListener{
                 }
             });
 
-            int lost = 0;
             for ( File f : fileList ){
                 Cheque newCheque = Cheque.parse(Command.runCommand("lib/pingLM " +  f.getAbsolutePath())); 
-                if (newCheque != null){
-                    cheques.add(newCheque);
-                }else{
-                    lost = lost + 1;
-                }
+                cheques.add(newCheque); //for unmatchable cheque, will pass in as EMPTY_CHEQUE
             }
 
             // Output statistic 
+            int lost = 0;
             int amountHKD = 0;
             int amountMOP = 0;
             int qtyHKD = 0;
@@ -175,13 +171,17 @@ public class Main extends JFrame implements ActionListener{
 
             for ( Cheque c : cheques ){
                 echo(c.toString());
-                if (c.getCcy().compareTo("HKD")==0){
-                    amountHKD += c.getAmount();
-                    qtyHKD += 1;
-                }
-                if (c.getCcy().compareTo("MOP")==0){
-                    amountMOP += c.getAmount();
-                    qtyMOP += 1;
+                if (c.isEmpty()){
+                    lost += 1;
+                }else{
+                    if (c.getCcy().compareTo("HKD")==0){
+                        amountHKD += c.getAmount();
+                        qtyHKD += 1;
+                    }
+                    if (c.getCcy().compareTo("MOP")==0){
+                        amountMOP += c.getAmount();
+                        qtyMOP += 1;
+                    }
                 }
             }
 
