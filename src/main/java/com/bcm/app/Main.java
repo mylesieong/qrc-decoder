@@ -31,6 +31,8 @@ public class Main extends JFrame implements ActionListener{
     /*
      * Screen component
      */
+    private JLabel mTitle;
+    private JLabel mSubtitle;
     private JTextField mFileTextField;
     private JButton mChooseButton;
     private JButton mValidateButton;
@@ -75,8 +77,8 @@ public class Main extends JFrame implements ActionListener{
     }
         
     private void initialize() {
-        initScreen();
         loadProperties();
+        initScreen();
     }
 
     private void loadProperties(){
@@ -97,56 +99,64 @@ public class Main extends JFrame implements ActionListener{
     }
 
     private void initScreen(){
-        this.setBounds(100, 100, 700, 360);
+        this.setBounds(100, 100, 700, 410);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.getContentPane().setLayout(null);
         
+        mTitle = new JLabel(mBankName);
+        mTitle.setBounds(15, 15, 700, 20);
+        this.getContentPane().add(mTitle);
+
+        mSubtitle = new JLabel(mAppName);
+        mSubtitle.setBounds(15, 40, 700, 20);
+        this.getContentPane().add(mSubtitle);
+
         mFileTextField = new JTextField("");
-        mFileTextField.setBounds(15, 15, 390, 20);
+        mFileTextField.setBounds(15, 65, 390, 20);
         this.getContentPane().add(mFileTextField);
         
         mChooseButton = new JButton("Choose");
-        mChooseButton.setBounds(420, 15, 80, 20);
+        mChooseButton.setBounds(420, 65, 80, 20);
         mChooseButton.addActionListener(this);
         this.getContentPane().add(mChooseButton);
         
         mValidateButton = new JButton("Validate");
-        mValidateButton.setBounds(510, 15, 80, 20);
+        mValidateButton.setBounds(510, 65, 80, 20);
         mValidateButton.addActionListener(this);
         this.getContentPane().add(mValidateButton);
         
         mExportButton = new JButton("Export");
-        mExportButton.setBounds(600, 15, 80, 20);
+        mExportButton.setBounds(600, 65, 80, 20);
         mExportButton.addActionListener(this);
         this.getContentPane().add(mExportButton);
 
         mTextArea = new JTextArea("");
         mScrollPane = new JScrollPane(mTextArea);
-        mScrollPane.setBounds(15, 50, 665, 220);
+        mScrollPane.setBounds(15, 100, 665, 220);
         this.getContentPane().add(mScrollPane);
         
         mAmountLabel = new JLabel("Total Amount(HKD/MOP):");
-        mAmountLabel.setBounds(15, 270, 150, 20);
+        mAmountLabel.setBounds(15, 320, 150, 20);
         this.getContentPane().add(mAmountLabel);
 
         mAmount = new JLabel("{amount}");
-        mAmount.setBounds(160, 270, 150, 20);
+        mAmount.setBounds(160, 320, 150, 20);
         this.getContentPane().add(mAmount);
 
         mQuantityLabel = new JLabel("Total Qty(HKD/MOP):");
-        mQuantityLabel.setBounds(15, 290, 150, 20);
+        mQuantityLabel.setBounds(15, 340, 150, 20);
         this.getContentPane().add(mQuantityLabel);
 
         mQuantity = new JLabel("{qty}");
-        mQuantity.setBounds(160, 290, 150, 20);
+        mQuantity.setBounds(160, 340, 150, 20);
         this.getContentPane().add(mQuantity);
 
         mUnmatchLabel = new JLabel("Unmatchable:");
-        mUnmatchLabel.setBounds(15, 310, 150, 20);
+        mUnmatchLabel.setBounds(15, 360, 150, 20);
         this.getContentPane().add(mUnmatchLabel);
 
         mUnmatch = new JLabel("{um}");
-        mUnmatch.setBounds(160, 310, 150, 20);
+        mUnmatch.setBounds(160, 360, 150, 20);
         this.getContentPane().add(mUnmatch);
 
         this.setResizable(false);
