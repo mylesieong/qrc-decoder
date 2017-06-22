@@ -24,9 +24,13 @@ import java.awt.event.ActionEvent;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Properties;
 
 public class Main extends JFrame implements ActionListener{
 
+    /*
+     * Screen component
+     */
     private JTextField mFileTextField;
     private JButton mChooseButton;
     private JButton mValidateButton;
@@ -41,6 +45,16 @@ public class Main extends JFrame implements ActionListener{
     private JLabel mQuantity;
     private JLabel mUnmatch;
 
+    /*
+     * Properties
+     */
+    private String mBankName;
+    private String mAppName;
+    private String mBranchName;
+    private String mInputPath;
+    private String mOutputPath;
+    private String mOutputName;
+    private String mTempPath;
 
     public static void main( String[] args ){
 
@@ -60,8 +74,29 @@ public class Main extends JFrame implements ActionListener{
 
     }
         
-    public void initialize() {
+    private void initialize() {
+        initScreen();
+        loadProperties();
+    }
 
+    private void loadProperties(){
+        Properties prop = new Properties();
+        try {
+            FileInputStream input = new FileInputStream("qrc.properties");
+            prop.load(input);
+            mBankName = prop.getProperty("BANK_NAME");
+            mAppName = prop.getProperty("APP_NAME");
+            mBranchName = prop.getProperty("BRANCH_NAME");
+            mInputPath = prop.getProperty("INPUT_FOLDER");
+            mOutputPath = prop.getProperty("OUTPUT_FOLDER");
+            mOutputName = prop.getProperty("OUTPUT_NAME");
+            mTempPath = prop.getProperty("TEMP_FOLDER");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void initScreen(){
         this.setBounds(100, 100, 700, 360);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.getContentPane().setLayout(null);
