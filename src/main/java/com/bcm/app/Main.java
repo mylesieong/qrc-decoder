@@ -249,15 +249,17 @@ public class Main extends JFrame implements ActionListener{
 
             for ( File f : fileList ){
                 Cheque newCheque = Cheque.parse(Command.runCommand("lib/pingLM " +  f.getAbsolutePath())); 
-                if (newCheque != null) cheques.add(newCheque);
+                cheques.add(newCheque); //for unmatchable cheque, will pass in as EMPTY_CHEQUE
             }
 
             // Loops chq list to output csv string
             String csvContent = "";
             String csvHeader = "\"Bank\",\"Type\",\"Currency\",\"Cheque No\",\"Amount\",\"Account Name\",\"Account Number\",\"Envelope Number\"";
             csvContent = csvContent + csvHeader + "\n";
-            for (int i = 0; i < cheques.size() ; i++){
-                csvContent = csvContent + cheques.get(i).toCsv() + "\n";
+            for ( Cheque c : cheques ){
+                if (!c.isEmpty()){
+                    csvContent = csvContent + c.toCsv() + "\n";
+                }
             }
 
             // Output the file
