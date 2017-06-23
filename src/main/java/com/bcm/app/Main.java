@@ -1,4 +1,4 @@
-package com.bcm.app;
+package com.bcm.app; 
 
 import static java.nio.file.StandardCopyOption.*;
 import java.nio.file.Files;
@@ -111,7 +111,7 @@ public class Main extends JFrame implements ActionListener{
         mSubtitle.setBounds(15, 40, 700, 20);
         this.getContentPane().add(mSubtitle);
 
-        mFileTextField = new JTextField("");
+        mFileTextField = new JTextField(mInputPath);
         mFileTextField.setBounds(15, 65, 390, 20);
         this.getContentPane().add(mFileTextField);
         
@@ -185,7 +185,7 @@ public class Main extends JFrame implements ActionListener{
 
             echo("Start validation...");
             String targetFolder = this.mFileTextField.getText();
-            String tempPathName = "temp";
+            String tempPathName = this.mTempPath;
 
             copyPDFs(targetFolder, tempPathName);
 
@@ -240,7 +240,7 @@ public class Main extends JFrame implements ActionListener{
         }else if (e.getSource() == this.mExportButton){
             echo("Start export...");
             String targetFolder = this.mFileTextField.getText();
-            String tempPathName = "temp";
+            String tempPathName = this.mTempPath;
 
             copyPDFs(targetFolder, tempPathName);
 
@@ -273,7 +273,7 @@ public class Main extends JFrame implements ActionListener{
             }
 
             // Output the file
-            String exportName = targetFolder + File.separator + "output.csv"; 
+            String exportName = this.mOutputPath + File.separator + this.mOutputName; 
             try{
                 File export = new File(exportName);
                 FileOutputStream fos = new FileOutputStream(export);
@@ -341,7 +341,7 @@ public class Main extends JFrame implements ActionListener{
      * helper function: convert pdfs under given folder to jpg at same location
      */
     private void convertPDFs(String path){
-        Command.runCommand("lib/convert -density 240 -quality 80 -trim " + path + "/*.pdf temp/temp.jpg"); //wildcard eats all pdfs
+        Command.runCommand("lib/convert -density 240 -quality 80 -trim " + path + "/*.pdf " + path + "/temp.jpg"); //wildcard eats all pdfs
     }
 
     /*
