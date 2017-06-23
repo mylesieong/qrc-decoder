@@ -53,6 +53,7 @@ public class Main extends JFrame implements ActionListener{
     private String mBankName;
     private String mAppName;
     private String mBranchName;
+    private String mBranchCode;
     private String mInputPath;
     private String mOutputPath;
     private String mOutputName;
@@ -84,11 +85,12 @@ public class Main extends JFrame implements ActionListener{
     private void loadProperties(){
         Properties prop = new Properties();
         try {
-            FileInputStream input = new FileInputStream("qrc.properties");
+            FileInputStream input = new FileInputStream("config.ini");
             prop.load(input);
             mBankName = prop.getProperty("BANK_NAME");
             mAppName = prop.getProperty("APP_NAME");
             mBranchName = prop.getProperty("BRANCH_NAME");
+            mBranchCode = prop.getProperty("BRANCH_CODE");
             mInputPath = prop.getProperty("INPUT_FOLDER");
             mOutputPath = prop.getProperty("OUTPUT_FOLDER");
             mOutputName = prop.getProperty("OUTPUT_NAME");
