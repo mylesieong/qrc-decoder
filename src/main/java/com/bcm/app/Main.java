@@ -40,10 +40,8 @@ public class Main extends JFrame implements ActionListener{
     private JTextArea mTextArea;
     private JScrollPane mScrollPane;
     private JFileChooser mFileChooser;
-    private JLabel mAmountLabel;
     private JLabel mQuantityLabel;
     private JLabel mUnmatchLabel;
-    private JLabel mAmount;
     private JLabel mQuantity;
     private JLabel mUnmatch;
 
@@ -137,28 +135,20 @@ public class Main extends JFrame implements ActionListener{
         mScrollPane.setBounds(15, 100, 665, 220);
         this.getContentPane().add(mScrollPane);
         
-        mAmountLabel = new JLabel("Total Amount(HKD/MOP):");
-        mAmountLabel.setBounds(15, 320, 150, 20);
-        this.getContentPane().add(mAmountLabel);
-
-        mAmount = new JLabel("{amount}");
-        mAmount.setBounds(160, 320, 150, 20);
-        this.getContentPane().add(mAmount);
-
         mQuantityLabel = new JLabel("Total Qty(HKD/MOP):");
-        mQuantityLabel.setBounds(15, 340, 150, 20);
+        mQuantityLabel.setBounds(15, 330, 150, 20);
         this.getContentPane().add(mQuantityLabel);
 
-        mQuantity = new JLabel("{qty}");
-        mQuantity.setBounds(160, 340, 150, 20);
+        mQuantity = new JLabel("");
+        mQuantity.setBounds(160, 330, 150, 20);
         this.getContentPane().add(mQuantity);
 
         mUnmatchLabel = new JLabel("Unmatchable:");
-        mUnmatchLabel.setBounds(15, 360, 150, 20);
+        mUnmatchLabel.setBounds(15, 350, 150, 20);
         this.getContentPane().add(mUnmatchLabel);
 
-        mUnmatch = new JLabel("{um}");
-        mUnmatch.setBounds(160, 360, 150, 20);
+        mUnmatch = new JLabel("");
+        mUnmatch.setBounds(160, 350, 150, 20);
         this.getContentPane().add(mUnmatch);
 
         this.setResizable(false);
@@ -211,8 +201,6 @@ public class Main extends JFrame implements ActionListener{
 
             // Output statistic 
             int lost = 0;
-            int amountHKD = 0;
-            int amountMOP = 0;
             int qtyHKD = 0;
             int qtyMOP = 0;
 
@@ -222,17 +210,14 @@ public class Main extends JFrame implements ActionListener{
                     lost += 1;
                 }else{
                     if (c.getCcy().compareTo("HKD")==0){
-                        amountHKD += c.getAmount();
                         qtyHKD += 1;
                     }
                     if (c.getCcy().compareTo("MOP")==0){
-                        amountMOP += c.getAmount();
                         qtyMOP += 1;
                     }
                 }
             }
 
-            this.mAmount.setText(Integer.toString(amountHKD) + " / " + Integer.toString(amountMOP));
             this.mQuantity.setText(Integer.toString(qtyHKD) + " / " + Integer.toString(qtyMOP));
             this.mUnmatch.setText(Integer.toString(lost));
 
