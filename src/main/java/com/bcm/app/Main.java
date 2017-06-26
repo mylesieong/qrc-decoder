@@ -18,6 +18,9 @@ import javax.swing.JTextArea;
 import javax.swing.JScrollPane;
 import javax.swing.JDialog;
 import javax.swing.JButton;
+import java.awt.Font;
+import net.miginfocom.swing.MigLayout;
+import javax.swing.ImageIcon;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -31,11 +34,12 @@ public class Main extends JFrame implements ActionListener{
     /*
      * Screen component
      */
-    private JLabel mTitle;
-    private JLabel mSubtitle;
-    private JTextField mFileTextField;
-    private JButton mChooseButton;
-    private JButton mValidateButton;
+    private JLabel mBankLabel;
+    private JLabel mAppLabel;
+    private JLabel mImage;
+    private JTextField mTextField;
+    private JButton mOpenButton;
+    private JButton mLoadButton;
     private JButton mExportButton;
     private JTextArea mTextArea;
     private JScrollPane mScrollPane;
@@ -99,59 +103,57 @@ public class Main extends JFrame implements ActionListener{
     }
 
     private void initScreen(){
-        this.setBounds(100, 100, 700, 410);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.getContentPane().setLayout(null);
-        
-        mTitle = new JLabel(mBankName);
-        mTitle.setBounds(15, 15, 700, 20);
-        this.getContentPane().add(mTitle);
-
-        mSubtitle = new JLabel(mAppName);
-        mSubtitle.setBounds(15, 40, 700, 20);
-        this.getContentPane().add(mSubtitle);
-
-        mFileTextField = new JTextField(mInputPath);
-        mFileTextField.setBounds(15, 65, 390, 20);
-        this.getContentPane().add(mFileTextField);
-        
-        mChooseButton = new JButton("Choose");
-        mChooseButton.setBounds(420, 65, 80, 20);
-        mChooseButton.addActionListener(this);
-        this.getContentPane().add(mChooseButton);
-        
-        mValidateButton = new JButton("Validate");
-        mValidateButton.setBounds(510, 65, 80, 20);
-        mValidateButton.addActionListener(this);
-        this.getContentPane().add(mValidateButton);
-        
-        mExportButton = new JButton("Export");
-        mExportButton.setBounds(600, 65, 80, 20);
-        mExportButton.addActionListener(this);
-        this.getContentPane().add(mExportButton);
-
-        mTextArea = new JTextArea("");
-        mScrollPane = new JScrollPane(mTextArea);
-        mScrollPane.setBounds(15, 100, 665, 220);
-        this.getContentPane().add(mScrollPane);
-        
-        mQuantityLabel = new JLabel("Total Qty(HKD/MOP):");
-        mQuantityLabel.setBounds(15, 330, 150, 20);
-        this.getContentPane().add(mQuantityLabel);
-
-        mQuantity = new JLabel("");
-        mQuantity.setBounds(160, 330, 150, 20);
-        this.getContentPane().add(mQuantity);
-
-        mUnmatchLabel = new JLabel("Unmatchable:");
-        mUnmatchLabel.setBounds(15, 350, 150, 20);
-        this.getContentPane().add(mUnmatchLabel);
-
-        mUnmatch = new JLabel("");
-        mUnmatch.setBounds(160, 350, 150, 20);
-        this.getContentPane().add(mUnmatch);
 
         this.setResizable(false);
+        this.setBounds(100, 100, 700, 385);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.getContentPane().setLayout(
+                new MigLayout("", "[110px:110px:110px][110px:110px:110px][110px:110px:110px][110px:110px:110px][110px:110px:110px][110px:110px:110px]", "[25px:25px:25px][25px:25px:25px][25px:25px:25px][200px:200px:200px][25px:25px:25px][25px:25px:25px]")
+        );
+        
+        mBankLabel = new JLabel(mBankName);
+        mBankLabel.setFont(new Font("Tahoma", Font.PLAIN, 12));
+        this.getContentPane().add(mBankLabel, "cell 0 0 4 1,grow");
+        
+        mImage = new JLabel("");
+        mImage.setIcon(new ImageIcon("C:\\cygwin\\home\\bi77\\qrc-decoder\\img\\bcm_logo_s.jpg"));
+        this.getContentPane().add(mImage, "cell 4 0 2 2,alignx right,growy");
+        
+        mAppLabel = new JLabel(mAppName);
+        mAppLabel.setFont(new Font("Tahoma", Font.PLAIN, 14));
+        this.getContentPane().add(mAppLabel, "cell 0 1 4 1,grow");
+        
+        mTextField = new JTextField(mInputPath);
+        mTextField.setColumns(50);
+        this.getContentPane().add(mTextField, "cell 0 2 3 1,grow");
+        
+        mOpenButton = new JButton("Open Folder");
+        mOpenButton.addActionListener(this);
+        this.getContentPane().add(mOpenButton, "cell 3 2,grow");
+        
+        mLoadButton = new JButton("Load");
+        mLoadButton.addActionListener(this);
+        this.getContentPane().add(mLoadButton, "cell 4 2,grow");
+        
+        mExportButton = new JButton("Export");
+        mExportButton.addActionListener(this);
+        this.getContentPane().add(mExportButton, "cell 5 2,grow");
+        
+        mTextArea = new JTextArea();
+        mScrollPane = new JScrollPane(mTextArea);
+        this.getContentPane().add(mScrollPane, "cell 0 3 6 1,grow");
+        
+        mQuantityLabel = new JLabel("Qty (HKD/MOP):");
+        this.getContentPane().add(mQuantityLabel, "flowx,cell 0 4,grow");
+        
+        mQuantity = new JLabel("{qty}");
+        this.getContentPane().add(mQuantity, "cell 1 4,grow");
+        
+        mUnmatchLabel = new JLabel("Unmatchable:");
+        this.getContentPane().add(mUnmatchLabel, "cell 0 5,grow");
+        
+        mUnmatch = new JLabel("{int}");
+        this.getContentPane().add(mUnmatch, "cell 1 5,grow");
 
     }
     
@@ -164,19 +166,19 @@ public class Main extends JFrame implements ActionListener{
     @Override
     public void actionPerformed(ActionEvent e){
 
-        if (e.getSource() == this.mChooseButton){
+        if (e.getSource() == this.mOpenButton){
             
             JFileChooser jfc = this.getFileChooser();
             int returnValue = jfc.showOpenDialog(null);
 
             if ( returnValue == JFileChooser.APPROVE_OPTION){
-                this.mFileTextField.setText(jfc.getSelectedFile().getAbsolutePath());
+                this.mTextField.setText(jfc.getSelectedFile().getAbsolutePath());
             }
 
-        }else if (e.getSource() == this.mValidateButton){
+        }else if (e.getSource() == this.mLoadButton){
 
             echo("Start validation...");
-            String targetFolder = this.mFileTextField.getText();
+            String targetFolder = this.mTextField.getText();
             String tempPathName = this.mTempPath;
 
             copyPDFs(targetFolder, tempPathName);
@@ -226,7 +228,7 @@ public class Main extends JFrame implements ActionListener{
            
         }else if (e.getSource() == this.mExportButton){
             echo("Start export...");
-            String targetFolder = this.mFileTextField.getText();
+            String targetFolder = this.mTextField.getText();
             String tempPathName = this.mTempPath;
 
             copyPDFs(targetFolder, tempPathName);
