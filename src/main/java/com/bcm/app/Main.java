@@ -1,13 +1,13 @@
 package com.bcm.app; 
 
 import static java.nio.file.StandardCopyOption.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileSystemView;
@@ -311,17 +311,51 @@ public class Main extends JFrame implements ActionListener{
      */
     private void copyPDF(String file, String path){
 
-        String pdfName = file.substring(file.lastIndexOf(File.separator)); 
-        String tempPDFName = path + File.separator + pdfName;
+        String nameOfPDF = file.substring(file.lastIndexOf(File.separator)); 
+        String fullnameOfTempPDF = path + File.separator + nameOfPDF;
+        FileInputStream fis = null;
+        FileOutputStream fos = null;
+        BufferedInputStream bis = null;
+        BufferedOutputStream bos = null;
 
         try{
-            /* Build a folder next to target pdf and make its copy into folder*/
-            File tempPath = new File(path);
-            File originPDF = new File(file);
-            tempPath.mkdir();
-            Files.copy(new FileInputStream(originPDF), Paths.get(tempPDFName), REPLACE_EXISTING);
+            //Create path directory if not exist
+            File pathFile = new File(path);
+            if (!pathFile.exists()){
+                pathFile.mkdir();
+            }
+
+            //Delete duplicate file if exists
+            File tempPDF = new File(fullnameOfTempPDF);
+            if (tempPDF.exists()){
+                delete(tempPDF);
+            }
+            tempPDF.createNewFile();
+
+            //Build input stream and output stream
+            fis = new FileInputStream(file);
+            bis = new BufferedInputStream(fis);
+            fos = new FileOutputStream(fullnameOfTempPDF);
+            bos = new BufferedOutputStream(fos);
+
+            //Read from input and write to output
+            int c;
+            while ( (c = bis.read()) != -1){
+                bos.write(c);
+                bos.flush();
+            } 
+
         }catch (Exception ex){
             ex.printStackTrace();
+        }finally {
+            try {
+                if (fis != null) fis.close();
+                if (fos != null) fos.close();
+                if (bis != null) bis.close();
+                if (bos != null) bos.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
     }
