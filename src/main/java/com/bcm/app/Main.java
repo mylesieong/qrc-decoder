@@ -60,6 +60,8 @@ public class Main extends JFrame implements ActionListener{
     private String mOutputPath;
     private String mOutputName;
     private String mTempPath;
+    
+    private List<Cheque> mCheques;
 
     public static void main( String[] args ){
 
@@ -178,35 +180,15 @@ public class Main extends JFrame implements ActionListener{
         }else if (e.getSource() == this.mLoadButton){
 
             echo("Start validation...");
-            String targetFolder = this.mTextField.getText();
-            String tempPathName = this.mTempPath;
 
-            copyPDFs(targetFolder, tempPathName);
-
-            convertPDFs(tempPathName);
-
-            // Decode all generated imaged Files 
-            File tempPath = new File(tempPathName);
-            List<Cheque> cheques = new ArrayList<Cheque>();
-            File[] fileList = tempPath.listFiles(new FileFilter(){
-                @Override 
-                public boolean accept(File f){
-                    String type =f.getName().substring(f.getName().lastIndexOf(".") + 1);
-                    return type.compareToIgnoreCase("jpg") == 0;
-                }
-            });
-
-            for ( File f : fileList ){
-                Cheque newCheque = Cheque.parse(Command.runCommand("lib/pingLM " +  f.getAbsolutePath())); 
-                cheques.add(newCheque); //for unmatchable cheque, will pass in as EMPTY_CHEQUE
-            }
+            this.mCheques = this.parse(this.mTextField.getText(), this.mTempPath);
 
             // Output statistic 
             int lost = 0;
             int qtyHKD = 0;
             int qtyMOP = 0;
 
-            for ( Cheque c : cheques ){
+            for ( Cheque c : mCheques ){
                 echo(c.toString());
                 if (c.isEmpty()){
                     lost += 1;
@@ -224,38 +206,21 @@ public class Main extends JFrame implements ActionListener{
             this.mUnmatch.setText(Integer.toString(lost));
 
             // Delete all temp files and folder
-            delete(tempPath);
+            delete(new File(this.mTempPath));
            
         }else if (e.getSource() == this.mExportButton){
+
             echo("Start export...");
-            String targetFolder = this.mTextField.getText();
-            String tempPathName = this.mTempPath;
 
-            copyPDFs(targetFolder, tempPathName);
-
-            convertPDFs(tempPathName);
-
-            // Decode all generated imaged Files 
-            File tempPath = new File(tempPathName);
-            List<Cheque> cheques = new ArrayList<Cheque>();
-            File[] fileList = tempPath.listFiles(new FileFilter(){
-                @Override 
-                public boolean accept(File f){
-                    String type =f.getName().substring(f.getName().lastIndexOf(".") + 1);
-                    return type.compareToIgnoreCase("jpg") == 0;
-                }
-            });
-
-            for ( File f : fileList ){
-                Cheque newCheque = Cheque.parse(Command.runCommand("lib/pingLM " +  f.getAbsolutePath())); 
-                cheques.add(newCheque); //for unmatchable cheque, will pass in as EMPTY_CHEQUE
+            if (this.mCheques == null){
+                mCheques = this.parse(this.mTextField.getText(), this.mTempPath);
             }
 
             // Loops chq list to output csv string
             String csvContent = "";
             String csvHeader = "\"Bank\",\"Type\",\"Currency\",\"Cheque No\",\"Amount\",\"Account Name\",\"Account Number\",\"Envelope Number\"";
             csvContent = csvContent + csvHeader + "\n";
-            for ( Cheque c : cheques ){
+            for ( Cheque c : mCheques ){
                 if (!c.isEmpty()){
                     csvContent = csvContent + c.toCsv() + "\n";
                 }
@@ -281,9 +246,39 @@ public class Main extends JFrame implements ActionListener{
             }
 
             // Delete all temp files and folder
-            delete(tempPath);
+            delete(new File(this.mTempPath));
 
         }
+    }
+
+    /*
+     * helper function: read pdf from target folder and parse cheque objs from it
+     * @parameter: String path name of target folder
+     * @parameter: String path name of temp folder
+     * @return: An array of cheques
+     */
+    private List<Cheque> parse(String target, String temp){
+
+        copyPDFs(target, temp);
+        convertPDFs(temp);
+
+        // Decode all generated imaged Files 
+        File tempFolder = new File(temp);
+        List<Cheque> cheques = new ArrayList<Cheque>();
+        File[] fileList = tempFolder.listFiles(new FileFilter(){
+            @Override 
+            public boolean accept(File f){
+                String type =f.getName().substring(f.getName().lastIndexOf(".") + 1);
+                return type.compareToIgnoreCase("jpg") == 0;
+            }
+        });
+
+        for ( File f : fileList ){
+            Cheque newCheque = Cheque.parse(Command.runCommand("lib/pingLM " +  f.getAbsolutePath())); 
+            cheques.add(newCheque); //for unmatchable cheque, will pass in as EMPTY_CHEQUE
+        }
+
+        return cheques;
     }
 
     /* 
