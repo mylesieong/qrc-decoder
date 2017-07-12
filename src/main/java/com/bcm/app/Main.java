@@ -218,7 +218,7 @@ public class Main extends JFrame implements ActionListener{
 
             // Loops chq list to output csv string
             String csvContent = "";
-            String csvHeader = "\"Bank\",\"Type\",\"Currency\",\"Cheque No\",\"Amount\",\"Account Name\",\"Account Number\",\"Envelope Number\"";
+            String csvHeader = "\"1\",\"H\",\"H\",\"H\",\"H\",\"H\",\"H\",\"H\"";
             csvContent = csvContent + csvHeader + "\n";
             for ( Cheque c : mCheques ){
                 if (!c.isEmpty()){
@@ -359,7 +359,20 @@ public class Main extends JFrame implements ActionListener{
      * helper function: convert pdfs under given folder to jpg at same location
      */
     private void convertPDFs(String path){
-        Command.runCommand("lib/convert -density 240 -quality 80 -trim " + path + "/*.pdf " + path + "/temp.jpg"); //wildcard eats all pdfs
+
+        File target = new File(path);
+
+        File[] pdfList = target.listFiles(new FileFilter(){
+            @Override 
+            public boolean accept(File f){
+                String type =f.getName().substring(f.getName().lastIndexOf(".") + 1);
+                return type.compareToIgnoreCase("pdf") == 0;
+            }
+        });
+
+        for (File f : pdfList){
+            Command.runCommand("lib/gswin32 -sDEVICE=jpeg -r240 -o " + path + "/temp%03d.jpg " + f.getAbsolutePath() + " -q -dNOPROMPT -dBATCH"); 
+        }
     }
 
     /*

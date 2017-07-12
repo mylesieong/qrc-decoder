@@ -59,3 +59,6 @@ I solve it with collaborating the fact that string represent different char so t
 
 ## Detect multiple pdf [SOLVE]
 The application is required to read multiple pdf in a folder. This is poc by using imageMagick convert exe by passing in wildcard \*.pdf and it still can merge the output image to seqence.
+
+## Faster pdf 2 img convertion with ghostscript
+Use this command: `./gswin32 -sDEVICE=jpeg -r240 -o ./temp%03d.jpg tobeconvert.PDF -q -dNOPROMPT -dBATCH`
