@@ -218,7 +218,7 @@ public class Main extends JFrame implements ActionListener{
 
             // Loops chq list to output csv string
             String csvContent = "";
-            String csvHeader = "\"1\",\"H\",\"H\",\"H\",\"H\",\"H\",\"H\",\"H\"";
+            String csvHeader = "\"1\",\"H\",\"H\",\"H\",\"1\",\"H\",\"H\",\"H\"";
             csvContent = csvContent + csvHeader + "\n";
             for ( Cheque c : mCheques ){
                 if (!c.isEmpty()){
