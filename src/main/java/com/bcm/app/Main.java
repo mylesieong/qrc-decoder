@@ -1,6 +1,8 @@
 package com.bcm.app; 
 
-import static java.nio.file.StandardCopyOption.*;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Properties;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -8,6 +10,10 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+
+import java.awt.Font;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileSystemView;
@@ -18,16 +24,10 @@ import javax.swing.JTextArea;
 import javax.swing.JScrollPane;
 import javax.swing.JDialog;
 import javax.swing.JButton;
-import java.awt.Font;
-import net.miginfocom.swing.MigLayout;
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Properties;
+import net.miginfocom.swing.MigLayout;
 
 public class Main extends JFrame implements ActionListener{
 
@@ -207,6 +207,8 @@ public class Main extends JFrame implements ActionListener{
 
             // Delete all temp files and folder
             delete(new File(this.mTempPath));
+
+            JOptionPane.showMessageDialog(this, "Load finished.");
            
         }else if (e.getSource() == this.mExportButton){
 
@@ -247,6 +249,8 @@ public class Main extends JFrame implements ActionListener{
 
             // Delete all temp files and folder
             delete(new File(this.mTempPath));
+
+            JOptionPane.showMessageDialog(this, "Export finished.");
 
         }
     }
