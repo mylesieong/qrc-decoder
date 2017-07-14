@@ -338,11 +338,12 @@ public class Main extends JFrame implements ActionListener{
             bos = new BufferedOutputStream(fos);
 
             //Read from input and write to output
-            int c;
-            while ( (c = bis.read()) != -1){
+            byte[] c = new byte[1024];
+            int r = 0;
+            while ( (r = bis.read(c)) != -1 ){
                 bos.write(c);
                 bos.flush();
-            } 
+            }
 
         }catch (Exception ex){
             ex.printStackTrace();
