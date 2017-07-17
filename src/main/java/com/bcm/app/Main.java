@@ -376,7 +376,8 @@ public class Main extends JFrame implements ActionListener{
         });
 
         for (File f : pdfList){
-            Command.runCommand("lib/gswin32 -sDEVICE=jpeg -r240 -o " + path + "/temp%03d.jpg " + f.getAbsolutePath() + " -q -dNOPROMPT -dBATCH"); 
+            String tempPrefix = f.getAbsolutePath().substring( 0, f.getAbsolutePath().lastIndexOf(".") );
+            Command.runCommand("lib/gswin32 -sDEVICE=jpeg -r240 -o " + tempPrefix + "%03d.jpg " + f.getAbsolutePath() + " -q -dNOPROMPT -dBATCH"); 
         }
     }
 
