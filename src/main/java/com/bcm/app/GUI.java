@@ -118,7 +118,7 @@ public class GUI extends JFrame implements ActionListener{
         mScrollPane = new JScrollPane(mTextArea);
         this.getContentPane().add(mScrollPane, "cell 0 3 6 1,grow");
         
-        mQuantityLabel = new JLabel("Qty (HKD/MOP):");
+        mQuantityLabel = new JLabel("Qty (MOP/HKD):");
         this.getContentPane().add(mQuantityLabel, "flowx,cell 0 4,grow");
         
         mQuantity = new JLabel("{qty}");
