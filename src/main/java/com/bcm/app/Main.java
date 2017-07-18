@@ -10,6 +10,7 @@ public class Main{
             @Override 
             public void run(){
                 JFrame gui = new GUI();
+                gui.setVisible(true);
             }
         });
     }

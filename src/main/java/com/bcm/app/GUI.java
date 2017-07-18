@@ -1,15 +1,10 @@
 package com.bcm.app; 
 
+import java.io.*;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Properties;
-
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 
 import java.awt.Font;
 import java.awt.event.ActionListener;
@@ -60,25 +55,13 @@ public class GUI extends JFrame implements ActionListener{
     private String mOutputPath;
     private String mOutputName;
     private String mTempPath;
-    
     private List<Cheque> mCheques;
 
     public GUI() {
         this.initialize();
-        this.setVisible(true);
     }
 
-    private JFileChooser getFileChooser(){
-
-        if ( this.mFileChooser == null){
-            this.mFileChooser = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
-            this.mFileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        }
-        return this.mFileChooser;
-
-    }
-        
-    public void initialize() {
+    private void initialize() {
         loadProperties();
         initScreen();
     }
@@ -165,45 +148,28 @@ public class GUI extends JFrame implements ActionListener{
     @Override
     public void actionPerformed(ActionEvent e){
 
-        if (e.getSource() == this.mOpenButton){
+        if (e.getSource() == mOpenButton){
             
             JFileChooser jfc = this.getFileChooser();
             int returnValue = jfc.showOpenDialog(null);
 
             if ( returnValue == JFileChooser.APPROVE_OPTION){
-                this.mTextField.setText(jfc.getSelectedFile().getAbsolutePath());
+                mTextField.setText(jfc.getSelectedFile().getAbsolutePath());
             }
 
-        }else if (e.getSource() == this.mLoadButton){
+        }else if (e.getSource() == mLoadButton){
 
             echo("Start validation...");
 
-            this.mCheques = this.parse(this.mTextField.getText(), this.mTempPath);
+            // No matter whether loaded before, re-load
+            mCheques = Cheques.parse(mTextField.getText(), mTempPath);
 
-            // Output statistic 
-            int lost = 0;
-            int qtyHKD = 0;
-            int qtyMOP = 0;
+            if (mCheques != null){
 
-            for ( Cheque c : mCheques ){
-                echo(c.toString());
-                if (c.isEmpty()){
-                    lost += 1;
-                }else{
-                    if (c.getCcy().compareTo("HKD")==0){
-                        qtyHKD += 1;
-                    }
-                    if (c.getCcy().compareTo("MOP")==0){
-                        qtyMOP += 1;
-                    }
-                }
+                mQuantity.setText(Cheques.getQuantity(mCheques, Cheques.CHEQUE_MOP) + " / " + Cheques.getQuantity(mCheques, Cheques.CHEQUE_HKD));
+                mUnmatch.setText(Integer.toString(Cheques.getQuantity(mCheques, Cheques.CHEQUE_UNMATCH)));
+                
             }
-
-            this.mQuantity.setText(Integer.toString(qtyHKD) + " / " + Integer.toString(qtyMOP));
-            this.mUnmatch.setText(Integer.toString(lost));
-
-            // Delete all temp files and folder
-            delete(new File(this.mTempPath));
 
             JOptionPane.showMessageDialog(this, "Load finished.");
            
@@ -211,206 +177,27 @@ public class GUI extends JFrame implements ActionListener{
 
             echo("Start export...");
 
-            if (this.mCheques == null){
-                mCheques = this.parse(this.mTextField.getText(), this.mTempPath);
+            // Check if loaded before, dont load again and export directly
+            if (mCheques == null){
+                mCheques = Cheques.parse(mTextField.getText(), mTempPath);
             }
-
-            // Loops chq list to output csv string
-            String csvContent = "";
-            String csvHeader = "\"1\",\"H\",\"H\",\"H\",\"1\",\"H\",\"H\",\"H\"";
-            csvContent = csvContent + csvHeader + "\n";
-            for ( Cheque c : mCheques ){
-                if (!c.isEmpty()){
-                    csvContent = csvContent + c.toCsv() + "\n";
-                }
-            }
-
-            // Output the file
-            String exportName = this.mOutputPath + File.separator + this.mOutputName; 
-            try{
-                File export = new File(exportName);
-                FileOutputStream fos = new FileOutputStream(export);
-
-                if (!export.exists()){
-                    export.createNewFile();
-                    echo("Create file:" + exportName);
-                }
-
-                fos.write(csvContent.getBytes("UTF8"));
-                fos.flush();
-                fos.close();
-
-            }catch (Exception ex){
-                 ex.printStackTrace();
-            }
-
-            // Delete all temp files and folder
-            delete(new File(this.mTempPath));
+            Cheques.export(mCheques, mOutputPath + File.separator + mOutputName);
 
             JOptionPane.showMessageDialog(this, "Export finished.");
 
         }
     }
 
-    /*
-     * helper function: read pdf from target folder and parse cheque objs from it
-     * @parameter: String path name of target folder
-     * @parameter: String path name of temp folder
-     * @return: An array of cheques
-     */
-    private List<Cheque> parse(String target, String temp){
+    private JFileChooser getFileChooser(){
 
-        copyPDFs(target, temp);
-        convertPDFs(temp);
-
-        // Decode all generated imaged Files 
-        File tempFolder = new File(temp);
-        List<Cheque> cheques = new ArrayList<Cheque>();
-        File[] fileList = tempFolder.listFiles(new FileFilter(){
-            @Override 
-            public boolean accept(File f){
-                String type =f.getName().substring(f.getName().lastIndexOf(".") + 1);
-                return type.compareToIgnoreCase("jpg") == 0;
-            }
-        });
-
-        for ( File f : fileList ){
-            Cheque newCheque = Cheque.parse(Command.runCommand("lib/pingLM " +  f.getAbsolutePath())); 
-            cheques.add(newCheque); //for unmatchable cheque, will pass in as EMPTY_CHEQUE
+        if ( this.mFileChooser == null){
+            this.mFileChooser = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+            this.mFileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         }
-
-        return cheques;
-    }
-
-    /* 
-     * helper function: copy pdfs under target folder to temp folder 
-     */
-    private void copyPDFs(String from, String to){
-
-        File target = new File(from);
-
-        File[] pdfList = target.listFiles(new FileFilter(){
-            @Override 
-            public boolean accept(File f){
-                String type =f.getName().substring(f.getName().lastIndexOf(".") + 1);
-                return type.compareToIgnoreCase("pdf") == 0;
-            }
-        });
-
-        for (File f : pdfList){
-            copyPDF(f.getAbsolutePath(), to);
-        }
-    } 
-
-    /* 
-     * helper function: copy target file to a specific path
-     */
-    private void copyPDF(String file, String path){
-
-        String nameOfPDF = file.substring(file.lastIndexOf(File.separator)); 
-        String fullnameOfTempPDF = path + File.separator + nameOfPDF;
-        FileInputStream fis = null;
-        FileOutputStream fos = null;
-        BufferedInputStream bis = null;
-        BufferedOutputStream bos = null;
-
-        try{
-            //Create path directory if not exist
-            File pathFile = new File(path);
-            if (!pathFile.exists()){
-                pathFile.mkdir();
-            }
-
-            //Delete duplicate file if exists
-            File tempPDF = new File(fullnameOfTempPDF);
-            if (tempPDF.exists()){
-                delete(tempPDF);
-            }
-            tempPDF.createNewFile();
-
-            //Build input stream and output stream
-            fis = new FileInputStream(file);
-            bis = new BufferedInputStream(fis);
-            fos = new FileOutputStream(fullnameOfTempPDF);
-            bos = new BufferedOutputStream(fos);
-
-            //Read from input and write to output
-            byte[] c = new byte[1024];
-            int r = 0;
-            while ( (r = bis.read(c)) != -1 ){
-                bos.write(c);
-                bos.flush();
-            }
-
-        }catch (Exception ex){
-            ex.printStackTrace();
-        }finally {
-            try {
-                if (fis != null) fis.close();
-                if (fos != null) fos.close();
-                if (bis != null) bis.close();
-                if (bos != null) bos.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+        return this.mFileChooser;
 
     }
-
-    /*
-     * helper function: convert pdfs under given folder to jpg at same location
-     */
-    private void convertPDFs(String path){
-
-        File target = new File(path);
-
-        File[] pdfList = target.listFiles(new FileFilter(){
-            @Override 
-            public boolean accept(File f){
-                String type =f.getName().substring(f.getName().lastIndexOf(".") + 1);
-                return type.compareToIgnoreCase("pdf") == 0;
-            }
-        });
-
-        for (File f : pdfList){
-            String tempPrefix = f.getAbsolutePath().substring( 0, f.getAbsolutePath().lastIndexOf(".") );
-            Command.runCommand("lib/gswin32 -sDEVICE=jpeg -r240 -o " + tempPrefix + "%03d.jpg " + f.getAbsolutePath() + " -q -dNOPROMPT -dBATCH"); 
-        }
-    }
-
-    /*
-     * helper function: delete file/directory (allow not empty)
-     */
-    private void delete(File file){
-        try {
-            if (file.isDirectory()){
-                //if file is a folder and empty
-                if (file.list().length == 0){
-                    file.delete();
-                    echo("delete " + file.getName());
-                }else{
-                    //if file is a folder but not empty, delete sub files
-                    //and remove the empty folder afterward
-                    String files[] = file.list();
-                    for (String temp: files){
-                        File fileToBeDelete = new File(file, temp);
-                        delete(fileToBeDelete);
-                    }
-                    if (file.list().length == 0){
-                        file.delete();
-                    }
-                    echo("delete " + file.getName());
-                }
-
-            }else{
-                file.delete();
-                echo("delete " + file.getName());
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-
+        
     /*
      * helper function: echo to textArea
      */
