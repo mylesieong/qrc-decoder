@@ -61,27 +61,20 @@ public class GUI extends JFrame implements ActionListener{
      */
     private List<Cheque> mCheques;
 
-    public GUI() {
-        loadProperties();
+    public GUI(Properties prop) {
+        loadProperties(prop);
         initScreen();
     }
 
-    private void loadProperties(){
-        Properties prop = new Properties();
-        try {
-            FileInputStream input = new FileInputStream("config.ini");
-            prop.load(input);
-            mBankName = prop.getProperty("BANK_NAME");
-            mAppName = prop.getProperty("APP_NAME");
-            mBranchName = prop.getProperty("BRANCH_NAME");
-            mBranchCode = prop.getProperty("BRANCH_CODE");
-            mInputPath = prop.getProperty("INPUT_FOLDER");
-            mOutputPath = prop.getProperty("OUTPUT_FOLDER");
-            mOutputName = prop.getProperty("OUTPUT_NAME");
-            mTempPath = prop.getProperty("TEMP_FOLDER");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    private void loadProperties(Properties prop){
+        mBankName = prop.getProperty("BANK_NAME");
+        mAppName = prop.getProperty("APP_NAME");
+        mBranchName = prop.getProperty("BRANCH_NAME");
+        mBranchCode = prop.getProperty("BRANCH_CODE");
+        mInputPath = prop.getProperty("INPUT_FOLDER");
+        mOutputPath = prop.getProperty("OUTPUT_FOLDER");
+        mOutputName = prop.getProperty("OUTPUT_NAME");
+        mTempPath = prop.getProperty("TEMP_FOLDER");
     }
 
     private void initScreen(){
