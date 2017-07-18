@@ -55,13 +55,13 @@ public class GUI extends JFrame implements ActionListener{
     private String mOutputPath;
     private String mOutputName;
     private String mTempPath;
+
+    /*
+     * Data members
+     */
     private List<Cheque> mCheques;
 
     public GUI() {
-        this.initialize();
-    }
-
-    private void initialize() {
         loadProperties();
         initScreen();
     }
@@ -98,7 +98,7 @@ public class GUI extends JFrame implements ActionListener{
         this.getContentPane().add(mBankLabel, "cell 0 0 4 1,grow");
         
         mImage = new JLabel("");
-        mImage.setIcon(new ImageIcon("C:\\cygwin\\home\\bi77\\qrc-decoder\\img\\bcm_logo_s.jpg"));
+        mImage.setIcon(new ImageIcon("img\\bcm_logo_s.jpg"));
         this.getContentPane().add(mImage, "cell 4 0 2 2,alignx right,growy");
         
         mAppLabel = new JLabel(mAppName);
@@ -163,13 +163,9 @@ public class GUI extends JFrame implements ActionListener{
 
             // No matter whether loaded before, re-load
             mCheques = Cheques.parse(mTextField.getText(), mTempPath);
-
-            if (mCheques != null){
-
-                mQuantity.setText(Cheques.getQuantity(mCheques, Cheques.CHEQUE_MOP) + " / " + Cheques.getQuantity(mCheques, Cheques.CHEQUE_HKD));
-                mUnmatch.setText(Integer.toString(Cheques.getQuantity(mCheques, Cheques.CHEQUE_UNMATCH)));
-                
-            }
+            mQuantity.setText(Cheques.getQuantity(mCheques, Cheques.CHEQUE_MOP) + " / " 
+                        + Cheques.getQuantity(mCheques, Cheques.CHEQUE_HKD));
+            mUnmatch.setText(Integer.toString(Cheques.getQuantity(mCheques, Cheques.CHEQUE_UNMATCH)));
 
             JOptionPane.showMessageDialog(this, "Load finished.");
            
@@ -178,9 +174,12 @@ public class GUI extends JFrame implements ActionListener{
             echo("Start export...");
 
             // Check if loaded before, dont load again and export directly
-            if (mCheques == null){
+            if (mCheques == null || mCheques.size() == 0){
                 mCheques = Cheques.parse(mTextField.getText(), mTempPath);
             }
+            mQuantity.setText(Cheques.getQuantity(mCheques, Cheques.CHEQUE_MOP) + " / " 
+                    + Cheques.getQuantity(mCheques, Cheques.CHEQUE_HKD));
+            mUnmatch.setText(Integer.toString(Cheques.getQuantity(mCheques, Cheques.CHEQUE_UNMATCH)));
             Cheques.export(mCheques, mOutputPath + File.separator + mOutputName);
 
             JOptionPane.showMessageDialog(this, "Export finished.");
