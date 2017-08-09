@@ -40,9 +40,9 @@ public class GUI extends JFrame implements ActionListener{
     private JScrollPane mScrollPane;
     private JFileChooser mFileChooser;
     private JLabel mQuantityLabel;
-    private JLabel mUnmatchLabel;
+    private JLabel mUnreadableLabel;
     private JLabel mQuantity;
-    private JLabel mUnmatch;
+    private JLabel mUnreadable;
 
     /*
      * Properties
@@ -121,14 +121,14 @@ public class GUI extends JFrame implements ActionListener{
         mQuantityLabel = new JLabel("Qty (MOP/HKD):");
         this.getContentPane().add(mQuantityLabel, "flowx,cell 0 4,grow");
         
-        mQuantity = new JLabel("{qty}");
+        mQuantity = new JLabel("- / -");
         this.getContentPane().add(mQuantity, "cell 1 4,grow");
         
-        mUnmatchLabel = new JLabel("Unmatchable:");
-        this.getContentPane().add(mUnmatchLabel, "cell 0 5,grow");
+        mUnreadableLabel = new JLabel("Unreadable:");
+        this.getContentPane().add(mUnreadableLabel, "cell 0 5,grow");
         
-        mUnmatch = new JLabel("{int}");
-        this.getContentPane().add(mUnmatch, "cell 1 5,grow");
+        mUnreadable = new JLabel("-");
+        this.getContentPane().add(mUnreadable, "cell 1 5,grow");
 
     }
     
@@ -152,28 +152,45 @@ public class GUI extends JFrame implements ActionListener{
 
         }else if (e.getSource() == mLoadButton){
 
-            echo("Start validation...");
+            echo("Start loading...");
 
             // No matter whether loaded before, re-load
             mCheques = Cheques.parse(mTextField.getText(), mTempPath);
+
             mQuantity.setText(Cheques.getQuantity(mCheques, Cheques.CHEQUE_MOP) + " / " 
                         + Cheques.getQuantity(mCheques, Cheques.CHEQUE_HKD));
-            mUnmatch.setText(Integer.toString(Cheques.getQuantity(mCheques, Cheques.CHEQUE_UNMATCH)));
 
-            JOptionPane.showMessageDialog(this, "Load finished.");
+            mUnreadable.setText(Integer.toString(Cheques.getQuantity(mCheques, Cheques.CHEQUE_UNMATCH)));
+
+            for (Cheque c : mCheques){
+                echo(c.toString());
+            }
+           
+            echo("Loading finished");
+
+            JOptionPane.showMessageDialog(this, "Loading finished.");
            
         }else if (e.getSource() == this.mExportButton){
 
-            echo("Start export...");
+            echo("Start exporting...");
 
             // Check if loaded before, dont load again and export directly
             if (mCheques == null || mCheques.size() == 0){
                 mCheques = Cheques.parse(mTextField.getText(), mTempPath);
             }
+
             mQuantity.setText(Cheques.getQuantity(mCheques, Cheques.CHEQUE_MOP) + " / " 
                     + Cheques.getQuantity(mCheques, Cheques.CHEQUE_HKD));
-            mUnmatch.setText(Integer.toString(Cheques.getQuantity(mCheques, Cheques.CHEQUE_UNMATCH)));
+
+            mUnreadable.setText(Integer.toString(Cheques.getQuantity(mCheques, Cheques.CHEQUE_UNMATCH)));
+
+            for (Cheque c : mCheques){
+                echo(c.toString());
+            }
+
             Cheques.export(mCheques, mOutputPath + File.separator + mOutputName);
+           
+            echo("Exporting finished");
 
             JOptionPane.showMessageDialog(this, "Export finished.");
 
