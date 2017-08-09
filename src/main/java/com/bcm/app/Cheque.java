@@ -216,19 +216,19 @@ public class Cheque {
         StringBuilder result = new StringBuilder();
 
         result.append(this.getBank());
-        result.append(":");
+        result.append("\t");
         result.append(this.getType());
-        result.append(":");
+        result.append("\t");
         result.append(this.getCcy());
-        result.append(":");
+        result.append("\t");
         result.append(this.getId());
-        result.append(":");
+        result.append("\t");
         result.append(this.getAmount());
-        result.append(":");
+        result.append("\t");
         result.append(this.getHolder());
-        result.append(":");
+        result.append("\t");
         result.append(this.getAccount());
-        result.append(":");
+        result.append("\t");
         result.append(this.getEnvelope());
 
         return result.toString();
