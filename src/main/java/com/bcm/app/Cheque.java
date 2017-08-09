@@ -91,23 +91,28 @@ public class Cheque {
         
         Cheque cheque = Cheque.getEmptyCheque();
 
+        // Validate not null or empty or nonreadable
         if (blob == null 
                 || blob.compareTo(EMPTY_STRING) == 0
                 || blob.contains("error") ){
             return cheque;  //empty cheque
         }
 
-        String[] blobTokenized = blob.split(";");
+        try{
+            //Tailor made for blob result from AMCM API
+            String[] blobTokenized = blob.split(";");
+            cheque.setBank(blobTokenized[0] != null ? Integer.parseInt(blobTokenized[0]) : 0 );
+            cheque.setType(blobTokenized[1]);
+            cheque.setCcy(blobTokenized[2]);
+            cheque.setHolder(blobTokenized[3]);
+            cheque.setAccount(blobTokenized[4]);
+            cheque.setId(blobTokenized[5]);
+        }catch (Exception e){
+            System.out.println("There is mal-format found during parsing");
+        }
 
-        //Tailor made for blob result from AMCM API
-        cheque.setBank(blobTokenized[0] != null ? Integer.parseInt(blobTokenized[0]) : 0 );
-        cheque.setType(blobTokenized[1]);
-        cheque.setCcy(blobTokenized[2]);
-        cheque.setHolder(blobTokenized[3]);
-        cheque.setAccount(blobTokenized[4]);
-        cheque.setId(blobTokenized[5]);
-        
         return cheque;
+
     }
     
     /**
