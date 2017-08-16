@@ -11,12 +11,28 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Properties;
 
+/**
+ * Class Cheques is the utility class that manipulate Cheque objects.
+ * It provides method that parse Cheque objects from given pdf file,
+ * method that export injects Cheque objects into csv file, and method
+ * that analyse given Cheque objects.
+ *
+ */
 public class Cheques {
 
     public static final int CHEQUE_MOP = 0;
     public static final int CHEQUE_HKD = 1;
     public static final int CHEQUE_UNMATCH = 2;
 
+    /**
+     * Iterate injected Cheque List and return the quantity of certain 
+     * type of cheque in the list.
+     *
+     * @param List<Cheque> a list of cheque objects 
+     * @param int states the type we want to calculate 
+     *      (CHEQUE_MOP/CHEQUE_HKD/CHEQUE_UNMATCH)
+     * @return quantity of cheque objects in given type
+     */
     public static int getQuantity(List<Cheque> roster, int type){
 
         int result = 0;
@@ -50,11 +66,57 @@ public class Cheques {
         return result;
     }
 
-    /*
-     * helper function: read pdf from target folder and parse cheque objs from it
-     * @parameter: String path name of target folder
-     * @parameter: String path name of temp folder
-     * @return: An array of cheques
+    /**
+     * Export a list of cheque objects into a CSV format file.
+     * (note that a dummy header will be inserted)
+     *
+     * @param List<Cheque> cheque objects to be export
+     * @param String csv file name
+     * @return void
+     */
+    public static void export(List<Cheque> roster, String file){
+
+        String csvContent = "";
+        String csvHeader = "\"1\",\"H\",\"H\",\"H\",\"1\",\"H\",\"H\",\"H\"";
+        csvContent = csvContent + csvHeader + "\n";
+
+        // Prepare the content
+        for ( Cheque c : roster ){
+            if (!c.isEmpty()){
+                csvContent = csvContent + c.toCsv() + "\n";
+            }
+        }
+
+        // Output the file
+        try{
+            File export = new File(file);
+            FileOutputStream fos = new FileOutputStream(export);
+
+            if (!export.exists()){
+                export.createNewFile();
+            }
+
+            fos.write(csvContent.getBytes("UTF8"));
+            fos.flush();
+            fos.close();
+
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
+
+    }
+
+    /**
+     * Read PDF(s) from target folder and parse cheque objects from it/them.
+     * It first clears the temp folder, then copy the PDF(s) to temp folder and
+     * use ImageMagick/convert to split the PDF(s) into image files. Lastly,
+     * it uses AMCM API(pingLM.exe) to parse all image files into Cheque objects. 
+     *
+     * @param String path name of target folder that contains PDF(s)
+     * @param String temp folder path that is used to put the images converted
+     *   from the PDF(s) temporary. Temp folder will not be cleared until the
+     *   next invokion of parse method.
+     * @return List<Cheque> A list of cheque objects
      */
     public static List<Cheque> parse(String target, String temp){
 
@@ -82,8 +144,8 @@ public class Cheques {
         return cheques;
     }
 
-    /* 
-     * helper function: copy pdfs under target folder to temp folder 
+    /** 
+     * private helper function: copy pdf(s) under target folder to temp folder 
      */
     private static void copyPDFs(String from, String to){
 
@@ -102,8 +164,8 @@ public class Cheques {
         }
     } 
 
-    /* 
-     * helper function: copy target file to a specific path
+    /** 
+     * Private helper function: copy target file to a specific path
      */
     private static void copyPDF(String file, String path){
 
@@ -157,8 +219,9 @@ public class Cheques {
 
     }
 
-    /*
-     * helper function: convert pdfs under given folder to jpg at same location
+    /**
+     * Private helper function: convert pdfs under given folder to jpg and save
+     * the image file to the same folder. 
      */
     private static void convertPDFs(String path){
 
@@ -178,8 +241,9 @@ public class Cheques {
         }
     }
 
-    /*
-     * helper function: delete file/directory (allow not empty)
+    /**
+     * Private helper function: delete file/directory (if it is a folder and it
+     * is not empty, delete both the folder and its contents) 
      */
     private static void delete(File file){
         try {
@@ -206,40 +270,6 @@ public class Cheques {
         }catch (Exception e){
             e.printStackTrace();
         }
-    }
-
-    /*
-     *
-     */
-    public static void export(List<Cheque> roster, String file){
-
-        String csvContent = "";
-        String csvHeader = "\"1\",\"H\",\"H\",\"H\",\"1\",\"H\",\"H\",\"H\"";
-        csvContent = csvContent + csvHeader + "\n";
-
-        for ( Cheque c : roster ){
-            if (!c.isEmpty()){
-                csvContent = csvContent + c.toCsv() + "\n";
-            }
-        }
-
-        // Output the file
-        try{
-            File export = new File(file);
-            FileOutputStream fos = new FileOutputStream(export);
-
-            if (!export.exists()){
-                export.createNewFile();
-            }
-
-            fos.write(csvContent.getBytes("UTF8"));
-            fos.flush();
-            fos.close();
-
-        }catch (Exception ex){
-            ex.printStackTrace();
-        }
-
     }
 
 }

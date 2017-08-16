@@ -6,8 +6,20 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.io.File;
 
+/**
+ * An utility class that runs dos/bash command and return the standard 
+ * output (stdout) in String form.
+ *
+ */
 public class Command{
 
+    /**
+     * Utility method: run command injected.
+     *
+     * @param String command. 
+     *  e.g."dir", or in this context, "pingLM {image.name}"
+     * @return String stdout of the command
+     */
     public static String runCommand(String command){
 
         StringBuffer output = new StringBuffer();
