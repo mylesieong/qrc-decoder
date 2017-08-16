@@ -181,45 +181,64 @@ public class GUI extends JFrame implements ActionListener{
 
             echo("Start loading...");
 
-            // No matter whether loaded before, re-load
-            mCheques = Cheques.parse(mTextField.getText(), mTempPath);
+            try{
+                // No matter whether loaded before, re-load
+                mCheques = Cheques.parse(mTextField.getText(), mTempPath);
+                int qtyMOP = Cheques.getQuantity(mCheques, Cheques.CHEQUE_MOP);
+                int qtyHKD = Cheques.getQuantity(mCheques, Cheques.CHEQUE_HKD);
+                int qtyUnreadable = Cheques.getQuantity(mCheques, Cheques.CHEQUE_UNMATCH);
+    
+                mQuantity.setText(qtyMOP + " / " + qtyHKD);
+                mUnreadable.setText(Integer.toString(qtyUnreadable));
+    
+                for (Cheque c : mCheques){
+                    echo(c.toString());
+                }
+             
+                echo("Loading finished");
+    
+                JOptionPane.showMessageDialog(this, "Loading finished.");
 
-            mQuantity.setText(Cheques.getQuantity(mCheques, Cheques.CHEQUE_MOP) + " / " 
-                        + Cheques.getQuantity(mCheques, Cheques.CHEQUE_HKD));
+            }catch(Exception ex){
 
-            mUnreadable.setText(Integer.toString(Cheques.getQuantity(mCheques, Cheques.CHEQUE_UNMATCH)));
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Load interrupted. Please check path existence and file integrity.");
 
-            for (Cheque c : mCheques){
-                echo(c.toString());
             }
-           
-            echo("Loading finished");
-
-            JOptionPane.showMessageDialog(this, "Loading finished.");
            
         }else if (e.getSource() == this.mExportButton){
 
             echo("Start exporting...");
 
-            // Check if loaded before, dont load again and export directly
-            if (mCheques == null || mCheques.size() == 0){
-                mCheques = Cheques.parse(mTextField.getText(), mTempPath);
+            try{
+                // Check if loaded before, dont load again and export directly
+                if (mCheques == null || mCheques.size() == 0){
+                    mCheques = Cheques.parse(mTextField.getText(), mTempPath);
+                }
+    
+                int qtyMOP = Cheques.getQuantity(mCheques, Cheques.CHEQUE_MOP);
+                int qtyHKD = Cheques.getQuantity(mCheques, Cheques.CHEQUE_HKD);
+                int qtyUnreadable = Cheques.getQuantity(mCheques, Cheques.CHEQUE_UNMATCH);
+    
+                mQuantity.setText(qtyMOP + " / " + qtyHKD);
+                mUnreadable.setText(Integer.toString(qtyUnreadable));
+    
+                for (Cheque c : mCheques){
+                    echo(c.toString());
+                }
+    
+                Cheques.export(mCheques, mOutputPath + File.separator + mOutputName);
+             
+                echo("Exporting finished");
+    
+                JOptionPane.showMessageDialog(this, "Export finished.");
+    
+            }catch(Exception ex){
+
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Load/Export interrupted. Please check path existence and file integrity.");
+
             }
-
-            mQuantity.setText(Cheques.getQuantity(mCheques, Cheques.CHEQUE_MOP) + " / " 
-                    + Cheques.getQuantity(mCheques, Cheques.CHEQUE_HKD));
-
-            mUnreadable.setText(Integer.toString(Cheques.getQuantity(mCheques, Cheques.CHEQUE_UNMATCH)));
-
-            for (Cheque c : mCheques){
-                echo(c.toString());
-            }
-
-            Cheques.export(mCheques, mOutputPath + File.separator + mOutputName);
-           
-            echo("Exporting finished");
-
-            JOptionPane.showMessageDialog(this, "Export finished.");
 
         }
     }

@@ -118,7 +118,7 @@ public class Cheques {
      *   next invokion of parse method.
      * @return List<Cheque> A list of cheque objects
      */
-    public static List<Cheque> parse(String target, String temp){
+    public static List<Cheque> parse(String target, String temp) throws Exception {
 
         delete(new File(temp));
 
@@ -147,7 +147,7 @@ public class Cheques {
     /** 
      * private helper function: copy pdf(s) under target folder to temp folder 
      */
-    private static void copyPDFs(String from, String to){
+    private static void copyPDFs(String from, String to) throws Exception {
 
         File target = new File(from);
 
@@ -167,7 +167,7 @@ public class Cheques {
     /** 
      * Private helper function: copy target file to a specific path
      */
-    private static void copyPDF(String file, String path){
+    private static void copyPDF(String file, String path) throws Exception {
 
         String nameOfPDF = file.substring(file.lastIndexOf(File.separator)); 
         String fullnameOfTempPDF = path + File.separator + nameOfPDF;
@@ -205,8 +205,12 @@ public class Cheques {
             }
 
         }catch (Exception ex){
+
             ex.printStackTrace();
+            throw ex;
+
         }finally {
+
             try {
                 if (fis != null) fis.close();
                 if (fos != null) fos.close();
@@ -215,6 +219,7 @@ public class Cheques {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
         }
 
     }
