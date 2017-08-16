@@ -24,6 +24,10 @@ import javax.swing.JOptionPane;
 
 import net.miginfocom.swing.MigLayout;
 
+/**
+ * A Graphic User Interface for the QR code recognizing.
+ *
+ */
 public class GUI extends JFrame implements ActionListener{
 
     /*
@@ -61,11 +65,24 @@ public class GUI extends JFrame implements ActionListener{
      */
     private List<Cheque> mCheques;
 
+    /**
+     * Class initializer method.
+     * Called when class GUI object creation. 
+     *
+     * @param java.util.Properties should be injected by external code
+     */
     public GUI(Properties prop) {
         loadProperties(prop);
         initScreen();
     }
 
+    /**
+     * Class initializer method: Properties initializer.
+     * Called when class GUI object creation. 
+     *
+     * @param java.util.Properties 
+     * @return void
+     */
     private void loadProperties(Properties prop){
         mBankName = prop.getProperty("BANK_NAME");
         mAppName = prop.getProperty("APP_NAME");
@@ -77,6 +94,13 @@ public class GUI extends JFrame implements ActionListener{
         mTempPath = prop.getProperty("TEMP_FOLDER");
     }
 
+    /**
+     * Class initializer method: Screen initializer.
+     * Called when class GUI object creation. 
+     *
+     * @param void
+     * @return void
+     */
     private void initScreen(){
 
         this.setResizable(false);
@@ -132,11 +156,14 @@ public class GUI extends JFrame implements ActionListener{
 
     }
     
-    /* 
+    /** 
      * In this method, the major action logic is specify. 
      * If there are future changes on operation steps or 
      * adding new steps, only need to modify code in this
      * method.
+     *
+     * @param ActionEvent passed by swing framework 
+     * @return void
      */
     @Override
     public void actionPerformed(ActionEvent e){
@@ -197,6 +224,11 @@ public class GUI extends JFrame implements ActionListener{
         }
     }
 
+    /**
+     * Helper function: get global singleton JFileChooser
+     *
+     * @return  JFileChooser 
+     */
     private JFileChooser getFileChooser(){
 
         if ( this.mFileChooser == null){
@@ -207,8 +239,11 @@ public class GUI extends JFrame implements ActionListener{
 
     }
         
-    /*
-     * helper function: echo to textArea
+    /**
+     * Helper function: echo to textArea on GUI
+     *
+     * @param   message the String to present onto TextArea
+     * @return  void
      */
     private void echo(String message){
         this.mTextArea.setText(this.mTextArea.getText() + "\n" + message);
