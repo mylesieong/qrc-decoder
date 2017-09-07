@@ -49,7 +49,7 @@ public class ChequeTest extends TestCase{
      */
     public void testParseNormalCase(){
         String blob = "103;CHQ;MOP;Mr Chan;ACC00102;ID990002";
-        Cheque testee = Cheque.parse(blob);
+        Cheque testee = Cheques.parseCheque(blob);
         assertTrue(testee.equals(tester));
     }
 
@@ -58,7 +58,7 @@ public class ChequeTest extends TestCase{
      */
     public void testParseNormalCaseExtraColon(){
         String blob = "103;CHQ;MOP;Mr Chan;ACC00102;ID990002;";
-        Cheque testee = Cheque.parse(blob);
+        Cheque testee = Cheques.parseCheque(blob);
         assertTrue(testee.equals(tester));
     }
 
@@ -67,7 +67,7 @@ public class ChequeTest extends TestCase{
      */
     public void testParseMalDataType(){
         String blob = "BoC;CHQ;MOP;Mr Chan;ACC00102;ID990002";
-        Cheque testee = Cheque.parse(blob);
+        Cheque testee = Cheques.parseCheque(blob);
         assertTrue(testee.isEmpty());
     }
 
@@ -76,7 +76,7 @@ public class ChequeTest extends TestCase{
      */
     public void testParseExtraParts(){
         String blob = "103;CHQ;MOP;Mr Chan;ACC00102;ID990002;ABCD;EEEE;TT;END";
-        Cheque testee = Cheque.parse(blob);
+        Cheque testee = Cheques.parseCheque(blob);
         assertTrue(testee.equals(tester));
     }
 
@@ -85,7 +85,7 @@ public class ChequeTest extends TestCase{
      */
     public void testParseLackOfParts5Colons(){
         String blob = "103;CHQ;;Mr Chan;;";
-        Cheque testee = Cheque.parse(blob);
+        Cheque testee = Cheques.parseCheque(blob);
         assertTrue(testee.equals(testerShort));
     }
 
@@ -94,7 +94,7 @@ public class ChequeTest extends TestCase{
      */
     public void testParseLackOfParts2Colons(){
         String blob = "103;CHQ;;Mr Chan";
-        Cheque testee = Cheque.parse(blob);
+        Cheque testee = Cheques.parseCheque(blob);
         assertTrue(testee.equals(testerShort));
     }
 
@@ -102,7 +102,7 @@ public class ChequeTest extends TestCase{
      * 
      */
     public void testParseNullInput(){
-        Cheque testee = Cheque.parse(null);
+        Cheque testee = Cheques.parseCheque(null);
         assertTrue(testee.isEmpty());
     }
 

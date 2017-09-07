@@ -12,29 +12,16 @@
 1. Compile Java Code: `mvn clean package`
 1. Run the Program by click the shortcut link of the batch file.
 
-# Working Log
-
-> 2017-05-09
-
-Source pdfbox to be the alternatives of imageMagick, the benefics is no installation for pdfbox (use it as the command line tool)
-
-> 2017-05-10
-
-Build the convert logic but found that the density of some testing is too low that cuase program collapse. And yet the upload logic is not applied.
-
-> 2017-05-25
-
-Add the csv exporting button and tested
+Note that the jar name is updated when the project version changes and it may demand an update of the batch file.
 
 # Issues Lot
 
 ## How to refactor the project to be testable 
 Principle:
 * SOLID, KISS, DRY
-* No design pattern is needed
+* Only a few design pattern is used in classes
 
 Concrete plan:
-* use springboot to ensure the di principle
 * separate the screen, the user's knowledge (where is the file), the vender's knowledge (parseQRC.exe and convert.exe), action. 
 * the Action wrap the knowledge performing, and it should be testable. 
 
@@ -60,5 +47,5 @@ I solve it with collaborating the fact that string represent different char so t
 ## Detect multiple pdf [SOLVE]
 The application is required to read multiple pdf in a folder. This is poc by using imageMagick convert exe by passing in wildcard \*.pdf and it still can merge the output image to seqence.
 
-## Faster pdf 2 img convertion with ghostscript
+## Faster pdf 2 img convertion with ghostscript instead of using ImageMagick:convert.exe [SOLVE]
 Use this command: `./gswin32 -sDEVICE=jpeg -r240 -o ./temp%03d.jpg tobeconvert.PDF -q -dNOPROMPT -dBATCH`

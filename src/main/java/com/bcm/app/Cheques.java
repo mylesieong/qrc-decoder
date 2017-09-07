@@ -20,10 +20,6 @@ import java.util.Properties;
  */
 public class Cheques {
 
-    public static final int CHEQUE_MOP = 0;
-    public static final int CHEQUE_HKD = 1;
-    public static final int CHEQUE_UNMATCH = 2;
-
     /**
      * Iterate injected Cheque List and return the quantity of certain 
      * type of cheque in the list.
@@ -37,7 +33,7 @@ public class Cheques {
 
         int result = 0;
 
-        if (type == CHEQUE_MOP){
+        if (type == Cheque.CHEQUE_MOP){
 
             for ( Cheque c : roster ){
                 if (!c.isEmpty() && c.getCcy().compareTo("MOP")==0 ){
@@ -45,7 +41,7 @@ public class Cheques {
                 }
             }
 
-        }else if (type == CHEQUE_HKD){
+        }else if (type == Cheque.CHEQUE_HKD){
 
             for ( Cheque c : roster ){
                 if (!c.isEmpty() && c.getCcy().compareTo("HKD")==0 ){
@@ -53,7 +49,7 @@ public class Cheques {
                 }
             }
             
-        }else if (type == CHEQUE_UNMATCH){
+        }else if (type == Cheque.CHEQUE_UNMATCH){
 
             for ( Cheque c : roster ){
                 if (c.isEmpty()){
@@ -83,7 +79,7 @@ public class Cheques {
         // Prepare the content
         for ( Cheque c : roster ){
             if (!c.isEmpty()){
-                csvContent = csvContent + c.toCsv() + "\n";
+                csvContent = csvContent + Cheques.toCsv(c) + "\n";
             }
         }
 
@@ -137,7 +133,7 @@ public class Cheques {
         });
 
         for ( File f : fileList ){
-            Cheque newCheque = Cheque.parse(Command.runCommand("lib/pingLM " +  f.getAbsolutePath())); 
+            Cheque newCheque = Cheques.parseCheque(Command.runCommand("lib/pingLM " +  f.getAbsolutePath())); 
             cheques.add(newCheque); //for unmatchable cheque, will pass in as EMPTY_CHEQUE
         }
 
@@ -275,6 +271,89 @@ public class Cheques {
         }catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Static utililty that parse string from AMCM QR-Code Parsing API 
+     * into Cheque object.
+     * @param String passed from amcm qrcode parsing api. 
+     *  e.g. '123;CHQ;MOP;Min Tech Company;001204932;00001924;'
+     * @return Cheque parsed from blob string, if blob is empty/error, 
+     *  then return an empty cheque.
+     */
+    public static Cheque parseCheque(String blob){
+        
+        Cheque cheque = Cheque.getEmptyCheque();
+
+        // Validate not null or empty or nonreadable
+        if (blob == null 
+                || blob.compareTo(Cheque.EMPTY_STRING) == 0
+                || blob.contains("error") ){
+            return cheque;  //empty cheque
+        }
+
+        try{
+            //Tailor made for blob result from AMCM API
+            String[] blobTokenized = blob.split(";");
+            cheque.setBank(blobTokenized[0] != null ? Integer.parseInt(blobTokenized[0]) : 0 );
+            cheque.setType(blobTokenized[1]);
+            cheque.setCcy(blobTokenized[2]);
+            cheque.setHolder(blobTokenized[3]);
+            cheque.setAccount(blobTokenized[4]);
+            cheque.setId(blobTokenized[5]);
+        }catch (Exception e){
+            System.out.println("There is mal-format found during parsing");
+        }
+
+        return cheque;
+
+    }
+
+    /**
+     * Static Utility that export this object to csv according to AMCM-format
+     *
+     * @return String a AMCM-format csv line
+     *   format: 'Bank Type Ccy ChqNum Amount Holder Account EnvelopeNum'
+     * e.g.'"123","CHQ","MOP","00001924","500000","Min Tech Company","001204932",""'
+     */
+    public static String toCsv(Cheque chq){
+
+        StringBuilder result = new StringBuilder();
+
+        result.append("\"");
+        result.append(chq.getBank());
+        result.append("\"");
+        result.append(",");
+        result.append("\"");
+        result.append(chq.getType());
+        result.append("\"");
+        result.append(",");
+        result.append("\"");
+        result.append(chq.getCcy());
+        result.append("\"");
+        result.append(",");
+        result.append("\"");
+        result.append(chq.getId());
+        result.append("\"");
+        result.append(",");
+        result.append("\"");
+        result.append(chq.getAmount());
+        result.append("\"");
+        result.append(",");
+        result.append("\"");
+        result.append(chq.getHolder());
+        result.append("\"");
+        result.append(",");
+        result.append("\"");
+        result.append(chq.getAccount());
+        result.append("\"");
+        result.append(",");
+        result.append("\"");
+        result.append(chq.getEnvelope());
+        result.append("\"");
+
+        return result.toString();
+
     }
 
 }

@@ -4,7 +4,7 @@
 
   <groupId>com.bcm.app</groupId>
   <artifactId>qrc-decoder</artifactId>
-  <version>1.2</version>
+  <version>1.2r0</version>
   <packaging>jar</packaging>
 
   <name>qrc-decoder</name>

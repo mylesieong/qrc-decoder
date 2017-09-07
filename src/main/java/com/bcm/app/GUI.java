@@ -184,9 +184,9 @@ public class GUI extends JFrame implements ActionListener{
             try{
                 // No matter whether loaded before, re-load
                 mCheques = Cheques.parse(mTextField.getText(), mTempPath);
-                int qtyMOP = Cheques.getQuantity(mCheques, Cheques.CHEQUE_MOP);
-                int qtyHKD = Cheques.getQuantity(mCheques, Cheques.CHEQUE_HKD);
-                int qtyUnreadable = Cheques.getQuantity(mCheques, Cheques.CHEQUE_UNMATCH);
+                int qtyMOP = Cheques.getQuantity(mCheques, Cheque.CHEQUE_MOP);
+                int qtyHKD = Cheques.getQuantity(mCheques, Cheque.CHEQUE_HKD);
+                int qtyUnreadable = Cheques.getQuantity(mCheques, Cheque.CHEQUE_UNMATCH);
     
                 mQuantity.setText(qtyMOP + " / " + qtyHKD);
                 mUnreadable.setText(Integer.toString(qtyUnreadable));
@@ -216,9 +216,9 @@ public class GUI extends JFrame implements ActionListener{
                     mCheques = Cheques.parse(mTextField.getText(), mTempPath);
                 }
     
-                int qtyMOP = Cheques.getQuantity(mCheques, Cheques.CHEQUE_MOP);
-                int qtyHKD = Cheques.getQuantity(mCheques, Cheques.CHEQUE_HKD);
-                int qtyUnreadable = Cheques.getQuantity(mCheques, Cheques.CHEQUE_UNMATCH);
+                int qtyMOP = Cheques.getQuantity(mCheques, Cheque.CHEQUE_MOP);
+                int qtyHKD = Cheques.getQuantity(mCheques, Cheque.CHEQUE_HKD);
+                int qtyUnreadable = Cheques.getQuantity(mCheques, Cheque.CHEQUE_UNMATCH);
     
                 mQuantity.setText(qtyMOP + " / " + qtyHKD);
                 mUnreadable.setText(Integer.toString(qtyUnreadable));

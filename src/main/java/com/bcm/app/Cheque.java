@@ -11,12 +11,14 @@ import java.io.FileOutputStream;
  */
 public class Cheque {
 
-    /* 
-     * Properties template
+    /*
+     * Type of cheque
      */
-    private final static int EMPTY_INT = 0;
-    private final static String EMPTY_STRING = "";
-    private final static Cheque EMPTY_CHEQUE = new Cheque();
+    public static final int CHEQUE_MOP = 0;
+    public static final int CHEQUE_HKD = 1;
+    public static final int CHEQUE_UNMATCH = 2;
+    public static final int EMPTY_INT = 0;
+    public static final String EMPTY_STRING = "";
 
     /* 
      * Properties 
@@ -29,6 +31,11 @@ public class Cheque {
     private String account;     /* e.g. 43212654334 */
     private int amount;
     private String envelope;
+
+    /* 
+     * Private static property
+     */
+    private static final Cheque EMPTY_CHEQUE = new Cheque();
 
     /**
      * ***PRIVATE***
@@ -184,42 +191,6 @@ public class Cheque {
     public String getEnvelope(){
         return this.envelope != null ? this.envelope : EMPTY_STRING ;
     }
-
-    /**
-     * Static utililty that parse string from AMCM QR-Code Parsing API 
-     * into Cheque object.
-     * @param String passed from amcm qrcode parsing api. 
-     *  e.g. '123;CHQ;MOP;Min Tech Company;001204932;00001924;'
-     * @return Cheque parsed from blob string, if blob is empty/error, 
-     *  then return an empty cheque.
-     */
-    public static Cheque parse(String blob){
-        
-        Cheque cheque = Cheque.getEmptyCheque();
-
-        // Validate not null or empty or nonreadable
-        if (blob == null 
-                || blob.compareTo(EMPTY_STRING) == 0
-                || blob.contains("error") ){
-            return cheque;  //empty cheque
-        }
-
-        try{
-            //Tailor made for blob result from AMCM API
-            String[] blobTokenized = blob.split(";");
-            cheque.setBank(blobTokenized[0] != null ? Integer.parseInt(blobTokenized[0]) : 0 );
-            cheque.setType(blobTokenized[1]);
-            cheque.setCcy(blobTokenized[2]);
-            cheque.setHolder(blobTokenized[3]);
-            cheque.setAccount(blobTokenized[4]);
-            cheque.setId(blobTokenized[5]);
-        }catch (Exception e){
-            System.out.println("There is mal-format found during parsing");
-        }
-
-        return cheque;
-
-    }
     
     /**
      * Factory method: get Empty Cheque
@@ -264,54 +235,6 @@ public class Cheque {
                this.getAmount() == opp.getAmount() &&
                this.getEnvelope().compareTo(opp.getEnvelope()) == 0 ; 
     }
-
-    /**
-     * Utility that export this object to csv according to AMCM-format
-     *
-     * @return String a AMCM-format csv line
-     *   format: 'Bank Type Ccy ChqNum Amount Holder Account EnvelopeNum'
-     * e.g.'"123","CHQ","MOP","00001924","500000","Min Tech Company","001204932",""'
-     */
-    public String toCsv(){
-
-        StringBuilder result = new StringBuilder();
-
-        result.append("\"");
-        result.append(this.getBank());
-        result.append("\"");
-        result.append(",");
-        result.append("\"");
-        result.append(this.getType());
-        result.append("\"");
-        result.append(",");
-        result.append("\"");
-        result.append(this.getCcy());
-        result.append("\"");
-        result.append(",");
-        result.append("\"");
-        result.append(this.getId());
-        result.append("\"");
-        result.append(",");
-        result.append("\"");
-        result.append(this.getAmount());
-        result.append("\"");
-        result.append(",");
-        result.append("\"");
-        result.append(this.getHolder());
-        result.append("\"");
-        result.append(",");
-        result.append("\"");
-        result.append(this.getAccount());
-        result.append("\"");
-        result.append(",");
-        result.append("\"");
-        result.append(this.getEnvelope());
-        result.append("\"");
-
-        return result.toString();
-
-    }
-
 
     /** 
      * Utility for debug use
