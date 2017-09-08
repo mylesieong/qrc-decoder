@@ -14,6 +14,32 @@
 
 Note that the jar name is updated when the project version changes and it may demand an update of the batch file.
 
+# Future-proof Features & Guidance
+
+Considering future possible changes varies, classes are designed in a way that follows suggested programming principles so that most of codes is re-usable. 
+
+Here lists some demo cases and suggested solutions:
+
+* If a new button "Upload" should be added to the GUI, and should be able to perform an upload action to as400:
+    - add a method upload(File) in class Cheques that run command `rfrompcb X:\path\to\file_upload.dtt`
+    - change class GUI to add button component, and modify acitonPerformed method to invoke method upload(File)
+    - rebuild the project!
+
+* If AMCM updates the qr code recognition api without change the api output format:
+    - replace the LM_Decoder.dll in folder lib/ 
+    - follow steps in #Build from source to compile and update the pingLM.exe 
+    - finish, no need to rebuild project. 
+
+* If AMCM updates the qr code recognition api and change the api output format(say rearrange the order of fields):
+    - replace the LM_Decoder.dll in folder lib/ 
+    - follow steps in #Build from source to compile and update the pingLM.exe 
+    - change the method parseCheque(String) in class Cheques to adapt new fields format
+    - rebuild the project!
+
+* If AMCM updates the export csv format requirement:
+    - change method toCsv(Cheque) in class Cheques.
+    - rebuild the project! 
+
 # Issues Lot
 
 ## How to refactor the project to be testable 
