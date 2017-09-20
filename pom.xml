@@ -56,7 +56,7 @@
                 <mainClass>com.bcm.app.Main</mainClass>
             </transformer>
         </transformers>
-        <finalName>${project.name}${project.version}</finalName>
+        <finalName>${project.name}</finalName>
     </configuration>
     </plugin>
 
